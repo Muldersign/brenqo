@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brenqo — offline</title>
+<style>
+  body { margin: 0; min-height: 100dvh; display: grid; place-items: center; background: #f6f6f8; color: #17171c; font: 15px/1.5 -apple-system, system-ui, sans-serif; text-align: center; padding: 24px; }
+  .card { background: #fff; border: 1px solid #ececf1; border-radius: 20px; padding: 32px 28px; max-width: 340px; box-shadow: 0 8px 24px -8px rgba(23,23,28,.08); }
+  h1 { font-size: 20px; margin: 16px 0 6px; }
+  p { color: #84848f; margin: 0 0 20px; }
+  button { background: #5b4bf5; color: #fff; border: 0; border-radius: 12px; height: 44px; padding: 0 20px; font-weight: 600; font-size: 15px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <img src="/icons/icon-192.png" width="56" height="56" alt="" style="border-radius:14px">
+    <h1>Je bent offline</h1>
+    <p>Zodra je weer verbinding hebt, staat alles gewoon klaar.</p>
+    <button onclick="location.reload()">Opnieuw proberen</button>
+  </div>
+</body>
+</html>
