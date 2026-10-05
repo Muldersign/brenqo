@@ -13,6 +13,8 @@ npm test           # domeinlogica: btw, matching, herinneringen, nummering, demo
 npm run build      # productiebuild
 ```
 
+**Live demo:** `npm run build:demo` maakt `demo/dist/brenqo.html`: de hele app als één zelfstandige pagina (in-memory router, geen server nodig). Die versie staat als Artifact online.
+
 Zonder configuratie draait Brenqo als **volledig klikbare demo** met twee administraties (Muldersign en V&Z Veendam). Data staat dan in de browser (localStorage); integraties worden gesimuleerd. Via *Instellingen → Gebruikers → Demo herstellen* begin je opnieuw.
 
 ## Wat er in zit

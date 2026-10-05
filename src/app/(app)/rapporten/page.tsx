@@ -13,6 +13,7 @@ import { formatEUR } from '@/lib/domain/money';
 import { parseISODate, toISODate, todayISO } from '@/lib/domain/dates';
 import { isOutstanding } from '@/lib/domain/status';
 import { cn } from '@/lib/utils';
+import { saveFile } from '@/lib/pdf/download';
 
 type Range = 'year' | 'lastYear' | 'month' | 'lastQuarter' | 'custom';
 
@@ -65,10 +66,7 @@ export default function ReportsPage() {
   function exportCsv() {
     const lines = ['Maand;Omzet excl. btw;Kosten excl. btw;Resultaat', ...data.series.map((p) => `${p.key};${p.revenue.toFixed(2).replace('.', ',')};${p.costs.toFixed(2).replace('.', ',')};${p.result.toFixed(2).replace('.', ',')}`)];
     const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `brenqo-rapport-${r.from}-${r.to}.csv`;
-    a.click();
+    saveFile(`brenqo-rapport-${r.from}-${r.to}.csv`, blob);
   }
 
   const margin = data.revenue ? Math.round((data.result / data.revenue) * 100) : 0;

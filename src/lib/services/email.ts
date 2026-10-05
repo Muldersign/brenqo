@@ -17,6 +17,7 @@ export interface OutgoingEmail {
  * the message still lands in the e-mail log of the administration.
  */
 export async function deliverEmail(mail: OutgoingEmail): Promise<{ delivered: boolean; demo: boolean }> {
+  if ((process.env.NODE_ENV as string) === 'demo') return { delivered: true, demo: true };
   try {
     const res = await fetch('/api/email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mail) });
     if (res.status === 501) return { delivered: true, demo: true };

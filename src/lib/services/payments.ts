@@ -10,6 +10,7 @@ import { amountDue } from '../domain/calc';
  * Without a key we use the built-in demo checkout so the flow can be tried.
  */
 export async function startPayment(inv: Invoice, returnUrl: string): Promise<string> {
+  if ((process.env.NODE_ENV as string) === 'demo') return `/f/${inv.publicToken}/betalen`;
   try {
     const res = await fetch('/api/payments', {
       method: 'POST',

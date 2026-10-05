@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import { Download, Eye, CircleCheck, ChevronDown, FileX, Landmark, Copy, CalendarClock } from 'lucide-react';
 import { toast } from 'sonner';
@@ -29,6 +29,7 @@ function PublicInvoice() {
   const org = useStore((s) => s.organizations.find((o) => o.id === inv?.organizationId));
   const customer = useStore((s) => s.customers.find((c) => c.id === inv?.customerId));
   const markViewed = useStore((s) => s.markInvoiceViewed);
+  const router = useRouter();
   const [showDoc, setShowDoc] = useState(false);
   const [paying, setPaying] = useState(false);
   const justPaid = params.get('betaald') === '1';
@@ -56,7 +57,8 @@ function PublicInvoice() {
     if (!inv) return;
     setPaying(true);
     const url = await startPayment(inv, `${window.location.origin}/f/${token}`);
-    window.location.href = url;
+    if (url.startsWith('/')) router.push(url);
+    else window.location.href = url;
   }
 
   return (

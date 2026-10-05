@@ -55,6 +55,9 @@ const DEMO: Record<string, Omit<OcrResult, 'date' | 'dueDate' | 'engine'>> = {
   meta: { supplierName: 'Meta', invoiceNumber: 'FBADS-5512-0091', subtotal: 82.64, vatAmount: 17.36, total: 100, vatRate: 21, iban: '', description: 'Advertenties Facebook & Instagram', categoryHint: 'Marketing' },
   ah: { supplierName: 'Albert Heijn', invoiceNumber: '', ...(() => { const s = splitVat(18.4, 9); return { subtotal: s.base, vatAmount: s.vat }; })(), total: 18.4, vatRate: 9, iban: '', description: 'Koffie en lunch klantoverleg', categoryHint: 'Representatie' },
 };
+/** The single-file demo build has no server: skip the API and simulate. */
+const IS_STANDALONE_DEMO = (process.env.NODE_ENV as string) === 'demo';
+
 const ROTATION = ['praxis', 'shell', 'ah'];
 let rotation = 0;
 
@@ -75,7 +78,7 @@ export async function recognizeDocument(file: File, kind: 'receipt' | 'invoice')
   const started = Date.now();
   const minDuration = 1600; // give the scan animation a moment, it feels more trustworthy
   let result: OcrResult | null = null;
-  try {
+  if (!IS_STANDALONE_DEMO) try {
     const body = new FormData();
     body.append('file', file);
     body.append('kind', kind);
