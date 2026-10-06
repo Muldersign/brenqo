@@ -22,7 +22,7 @@ export function CustomerPicker({ value, onChange }: { value: string; onChange: (
           type="button"
           className={cn(
             'flex w-full items-center gap-3 rounded-[14px] border bg-surface p-3 text-left shadow-card transition',
-            open ? 'border-brand-400 ring-4 ring-brand-100' : 'border-line-strong hover:border-faint',
+            open ? 'border-ink ring-1 ring-ink' : 'border-line-strong hover:border-faint',
           )}
         >
           {selected ? (

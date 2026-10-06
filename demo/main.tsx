@@ -1,8 +1,7 @@
 import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Toaster } from 'sonner';
-import '@fontsource-variable/inter';
-import '@fontsource-variable/manrope';
+import '@fontsource-variable/geist';
 import '../src/app/globals.css';
 import { ParamsContext, matchRoute, navigate, useLocationHref } from './shims/router';
 import { AppShell } from '@/components/shell/app-shell';

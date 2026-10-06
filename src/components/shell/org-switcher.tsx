@@ -23,8 +23,8 @@ export function OrgMark({ org, size = 32, className }: { org: { initials: string
   }
   return (
     <div
-      className={cn('grid shrink-0 place-items-center rounded-[10px] font-display font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]', className)}
-      style={{ width: size, height: size, fontSize: size * 0.38, background: `linear-gradient(140deg, ${org.accentColor}, color-mix(in srgb, ${org.accentColor} 70%, #000))` }}
+      className={cn('grid shrink-0 place-items-center rounded-[12px] font-semibold tracking-[-0.03em] text-[#fafafa]', className)}
+      style={{ width: size, height: size, fontSize: size * 0.36, background: org.accentColor }}
     >
       {org.initials}
     </div>
@@ -47,7 +47,7 @@ export function OrgSwitcher({ collapsed }: { collapsed?: boolean }) {
         <MenuTrigger asChild>
           <button
             className={cn(
-              'group flex w-full items-center gap-3 rounded-[14px] p-2 text-left transition hover:bg-black/[0.035]',
+              'group flex w-full items-center gap-3 rounded-[18px] p-2 text-left transition hover:bg-subtle',
               collapsed && 'justify-center p-1.5',
             )}
           >
@@ -55,8 +55,8 @@ export function OrgSwitcher({ collapsed }: { collapsed?: boolean }) {
             {!collapsed && (
               <>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[11px] font-medium uppercase tracking-wider text-faint">Administratie</div>
-                  <div className="truncate font-display text-[14.5px] font-semibold text-ink">{org.name}</div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-muted">Administratie</div>
+                  <div className="truncate text-[14px] font-semibold tracking-[-0.01em] text-ink">{org.name}</div>
                 </div>
                 <ChevronsUpDown className="size-4 text-faint transition group-hover:text-muted" />
               </>
@@ -82,7 +82,7 @@ export function OrgSwitcher({ collapsed }: { collapsed?: boolean }) {
                   <div className="truncate font-medium text-ink">{o.name}</div>
                   <div className="text-[11.5px] text-muted">{o.kind === 'association' ? 'Vereniging' : 'Onderneming'}</div>
                 </div>
-                {o.id === org.id && <Check className="!size-4 !text-brand-600" />}
+                {o.id === org.id && <Check className="!size-4 !text-ink" />}
               </div>
             </MenuItem>
           ))}
@@ -123,7 +123,7 @@ export function OrgSwitcher({ collapsed }: { collapsed?: boolean }) {
                 key={v}
                 type="button"
                 onClick={() => setKind(v)}
-                className={cn('rounded-2xl border p-3.5 text-left transition', kind === v ? 'border-brand-400 bg-brand-50/60 ring-4 ring-brand-100' : 'border-line-strong hover:bg-subtle')}
+                className={cn('rounded-[18px] border p-3.5 text-left transition', kind === v ? 'border-ink bg-surface' : 'border-line hover:bg-subtle')}
               >
                 <div className="text-[14px] font-semibold">{t}</div>
                 <div className="mt-0.5 text-[12.5px] text-muted">{d}</div>

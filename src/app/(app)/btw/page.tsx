@@ -62,12 +62,12 @@ export default function VatPage() {
           const isFuture = x.from > today;
           const filed = !isFuture && x.deadline < today;
           return (
-            <button key={x.n} onClick={() => setQ(x.n)} className={cn('rounded-[18px] border bg-surface p-4 text-left shadow-card transition', q === x.n ? 'border-brand-300 ring-4 ring-brand-100' : 'border-line hover:border-line-strong', isFuture && 'opacity-60')}>
+            <button key={x.n} onClick={() => setQ(x.n)} className={cn('rounded-[18px] border bg-surface p-4 text-left shadow-card transition', q === x.n ? 'border-ink ring-1 ring-ink' : 'border-line hover:border-line-strong', isFuture && 'opacity-60')}>
               <div className="flex items-center justify-between">
-                <span className="font-display text-[15px] font-bold">Q{x.n}</span>
+                <span className="font-display text-[15px] font-semibold">Q{x.n}</span>
                 {isFuture ? <Badge tone="muted">Nog niet</Badge> : filed ? <Badge tone="success"><CircleCheck className="size-3" /> Voorbij</Badge> : today <= x.to ? <Badge tone="info" dot>Loopt</Badge> : <Badge tone="warning" dot>Aangeven</Badge>}
               </div>
-              <div className="tabular mt-3 font-display text-[20px] font-bold tracking-[-0.02em]">{isFuture ? '—' : formatEUR(x.summary.balance)}</div>
+              <div className="tabular mt-3 font-display text-[20px] font-semibold tracking-[-0.02em]">{isFuture ? '—' : formatEUR(x.summary.balance)}</div>
               <div className="text-[12px] text-muted">{x.summary.balance >= 0 ? 'te betalen' : 'terug te krijgen'}</div>
             </button>
           );
@@ -80,10 +80,9 @@ export default function VatPage() {
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
           <div className="space-y-4">
             <Card className="relative overflow-hidden p-6 sm:p-8">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(600px_200px_at_0%_0%,rgba(108,92,244,0.10),transparent)]" />
-              <div className="relative">
+                            <div className="relative">
                 <div className="text-[13.5px] font-medium text-muted">Geschatte {s.balance >= 0 ? 'te betalen' : 'terug te vragen'} btw · Q{q} {year}</div>
-                <div className="mt-2 font-display text-[44px] font-bold leading-none tracking-[-0.04em] sm:text-[56px]"><AnimatedNumber value={Math.abs(s.balance)} format={(n) => formatEUR(n)} /></div>
+                <div className="mt-2 text-[44px] font-semibold leading-[1.1] tracking-display sm:text-[56px]"><AnimatedNumber value={Math.abs(s.balance)} format={(n) => formatEUR(n)} /></div>
                 <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-2">
                   {s.balance >= 0
                     ? <>Op basis van je administratie zou je ongeveer <span className="font-semibold text-ink">{formatEUR(s.balance)}</span> btw moeten betalen{running ? ' (het kwartaal loopt nog, dus dit kan nog veranderen)' : ''}.</>
@@ -121,8 +120,8 @@ export default function VatPage() {
                   </div>
                 ))}
                 <div className="flex items-center justify-between py-4">
-                  <dt className="font-display text-[16px] font-bold">Saldo {s.balance >= 0 ? 'te betalen' : 'terug te krijgen'}</dt>
-                  <dd className="tabular font-display text-[20px] font-bold">{formatEUR(Math.abs(s.balance))}</dd>
+                  <dt className="font-display text-[16px] font-semibold">Saldo {s.balance >= 0 ? 'te betalen' : 'terug te krijgen'}</dt>
+                  <dd className="tabular font-display text-[20px] font-semibold">{formatEUR(Math.abs(s.balance))}</dd>
                 </div>
               </dl>
             </Card>
@@ -165,7 +164,7 @@ function Mini({ icon, tone, label, value, sub }: { icon: React.ReactNode; tone: 
   return (
     <div className="rounded-[16px] bg-surface/80 p-4 ring-1 ring-line">
       <div className="flex items-center gap-2 text-[12.5px] text-muted"><IconTile tone={tone} className="size-7 rounded-[9px] [&_svg]:size-3.5">{icon}</IconTile>{label}</div>
-      <div className="tabular mt-2 font-display text-[19px] font-bold">{formatEUR(value)}</div>
+      <div className="tabular mt-2 font-display text-[19px] font-semibold">{formatEUR(value)}</div>
       <div className="text-[11.5px] text-faint">{sub}</div>
     </div>
   );

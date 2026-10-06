@@ -39,7 +39,7 @@ export default function CustomerDetailPage() {
           <Button variant="ghost" size="icon" asChild className="hidden sm:inline-flex"><Link href="/klanten" aria-label="Terug"><ArrowLeft className="!size-5" /></Link></Button>
           <Avatar name={customer.companyName} size={56} />
           <div className="min-w-0">
-            <h1 className="truncate font-display text-[24px] font-bold sm:text-[28px]">{customer.companyName}</h1>
+            <h1 className="truncate font-display text-[24px] font-semibold sm:text-[28px]">{customer.companyName}</h1>
             <div className="text-[14px] text-muted">{[customer.contactName, customer.city].filter(Boolean).join(' · ')}</div>
           </div>
         </div>
@@ -59,7 +59,7 @@ export default function CustomerDetailPage() {
         ].map(([l, v], i) => (
           <Card key={l} className="p-4 sm:p-5">
             <div className="text-[13px] text-muted">{l}</div>
-            <div className={`tabular mt-1 font-display text-[20px] font-bold tracking-[-0.02em] sm:text-[24px] ${i === 1 && open > 0 ? 'text-ink' : ''}`}>{v}</div>
+            <div className={`tabular mt-1 font-display text-[20px] font-semibold tracking-[-0.02em] sm:text-[24px] ${i === 1 && open > 0 ? 'text-ink' : ''}`}>{v}</div>
           </Card>
         ))}
       </div>

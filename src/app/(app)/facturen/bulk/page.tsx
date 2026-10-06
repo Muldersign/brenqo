@@ -77,7 +77,7 @@ export default function BulkInvoicePage() {
     return (
       <div className="mx-auto max-w-xl animate-fade-in py-10 text-center">
         <div className="mx-auto grid size-20 animate-pop place-items-center rounded-full bg-success-50"><div className="grid size-14 place-items-center rounded-full bg-success-500 text-white"><Check className="size-7" strokeWidth={3} /></div></div>
-        <h1 className="mt-6 font-display text-[26px] font-bold">{pluralize(created.length, 'factuur', 'facturen')} klaar</h1>
+        <h1 className="mt-6 font-display text-[26px] font-semibold">{pluralize(created.length, 'factuur', 'facturen')} klaar</h1>
         <p className="mt-2 text-[15px] text-muted">Nummers {first?.number} t/m {last?.number}. Wil je ze nu allemaal in één keer versturen?</p>
         <div className="mt-8 flex flex-col justify-center gap-2.5 sm:flex-row">
           <Button size="lg" onClick={sendAll} loading={sending}><Send /> Verstuur alle {created.length}</Button>
@@ -92,7 +92,7 @@ export default function BulkInvoicePage() {
       <div className="mb-6 flex items-center gap-3">
         <Button variant="ghost" size="icon" asChild><Link href="/facturen" aria-label="Terug"><ArrowLeft className="!size-5" /></Link></Button>
         <div>
-          <h1 className="font-display text-[24px] font-bold sm:text-[28px]">Meerdere facturen tegelijk</h1>
+          <h1 className="font-display text-[24px] font-semibold sm:text-[28px]">Meerdere facturen tegelijk</h1>
           <p className="text-[14px] text-muted">{org.kind === 'association' ? 'Handig voor contributie, sponsoring of deelnemersbijdragen.' : 'Dezelfde factuur voor meerdere klanten, ieder met een eigen nummer.'}</p>
         </div>
       </div>
@@ -152,7 +152,7 @@ export default function BulkInvoicePage() {
               <div className="flex items-center gap-2 text-[13px] text-muted"><Users className="size-4" /> {pluralize(count, 'relatie', 'relaties')} geselecteerd</div>
               <div className="mt-2 flex items-baseline justify-between">
                 <span className="text-[13.5px] text-muted">{formatEUR(each)} per factuur</span>
-                <span className="tabular font-display text-[24px] font-bold">{formatEUR(each * count)}</span>
+                <span className="tabular font-display text-[24px] font-semibold">{formatEUR(each * count)}</span>
               </div>
               {count > 0 && <div className="mt-1 text-[12.5px] text-muted">Nummers {formatDocNumber(org.invoicePrefix, org.nextInvoiceNumber)} t/m {formatDocNumber(org.invoicePrefix, org.nextInvoiceNumber + count - 1)}</div>}
             </div>

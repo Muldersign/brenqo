@@ -171,7 +171,7 @@ export const useStore = create<Store>()(
 
       createOrganization: ({ name, kind }) => {
         const org = { ...blankOrganization(uid('org'), name, new Date().getFullYear()), kind, initials: initials(name) };
-        if (kind === 'association') { org.vatRegistered = false; org.defaultVatRate = 0; org.accentColor = '#0E9F7E'; }
+        if (kind === 'association') { org.vatRegistered = false; org.defaultVatRate = 0; }
         const s = get();
         set({
           organizations: [...s.organizations, org],

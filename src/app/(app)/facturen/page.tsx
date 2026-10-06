@@ -231,7 +231,7 @@ function SummaryTile({ label, value, tone, onClick }: { label: string; value: nu
         {tone && <span className={cn('size-1.5 rounded-full', tone === 'danger' ? 'bg-danger-500' : 'bg-success-500')} />}
         {label}
       </div>
-      <div className="tabular mt-1 font-display text-[17px] font-bold tracking-[-0.02em] sm:text-[22px]">{formatEUR(value, { round: true })}</div>
+      <div className="tabular mt-1 font-display text-[17px] font-semibold tracking-[-0.02em] sm:text-[22px]">{formatEUR(value, { round: true })}</div>
     </button>
   );
 }

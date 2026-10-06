@@ -36,7 +36,7 @@ const TABS = [
   { id: 'gebruikers', label: 'Gebruikers', icon: Users },
 ] as const;
 
-const ACCENTS = ['#5B4BF5', '#2563EB', '#0E9F7E', '#16A34A', '#D97706', '#E11D48', '#9333EA', '#17171C'];
+const ACCENTS = ['#171717', '#404040', '#737373', '#5B4BF5', '#2563EB', '#0E9F7E', '#D97706', '#E11D48'];
 
 export default function SettingsPage() {
   const params = useSearchParams();
@@ -202,7 +202,7 @@ function RemindersTab({ org, update }: TabProps) {
         {org.reminders.steps.map((s, i) => (
           <Card key={s.id} className="p-5 sm:p-6">
             <div className="flex items-center gap-4">
-              <span className="grid size-8 place-items-center rounded-full bg-brand-50 text-[13px] font-bold text-brand-700">{i + 1}</span>
+              <span className="grid size-8 place-items-center rounded-full bg-brand-50 text-[13px] font-semibold text-brand-700">{i + 1}</span>
               <div className="flex-1">
                 <div className="text-[15px] font-semibold">{s.label}</div>
                 <div className="text-[13px] text-muted">{s.daysAfterDue} dagen na de vervaldatum</div>
@@ -235,7 +235,7 @@ function PaymentsTab({ org, update }: TabProps) {
     <>
       <Section title="Online betalen" description="Laat klanten direct betalen vanaf de factuur. Betaald? Dan staat de factuur vanzelf op betaald.">
         <div className="flex flex-col gap-4 rounded-2xl bg-subtle p-4 ring-1 ring-line sm:flex-row sm:items-center">
-          <div className="grid size-12 place-items-center rounded-2xl bg-ink font-display text-[15px] font-bold text-white">mollie</div>
+          <div className="grid size-12 place-items-center rounded-2xl bg-ink font-display text-[15px] font-semibold text-white">mollie</div>
           <div className="flex-1">
             <div className="flex items-center gap-2 text-[15px] font-semibold">Mollie {p.connected && <Badge tone="success" dot>Gekoppeld</Badge>}</div>
             <div className="text-[13px] text-muted">{p.connected ? 'Betalingen komen binnen op je eigen rekening. Webhooks zijn actief.' : 'Koppel je Mollie-account in een minuut.'}</div>
@@ -268,7 +268,7 @@ function BankTab() {
       <ul className="space-y-2">
         {accounts.map((a) => (
           <li key={a.id} className="flex items-center gap-3 rounded-2xl p-3 ring-1 ring-line">
-            <span className="grid size-10 place-items-center rounded-xl text-[12px] font-bold text-white" style={{ background: a.color }}>{a.bankName.slice(0, 2)}</span>
+            <span className="grid size-10 place-items-center rounded-xl text-[12px] font-semibold text-white" style={{ background: a.color }}>{a.bankName.slice(0, 2)}</span>
             <div className="min-w-0 flex-1"><div className="text-[14px] font-medium">{a.name}</div><div className="font-mono text-[12px] text-muted">{a.iban}</div></div>
             <Badge tone="success" dot>Actief</Badge>
           </li>

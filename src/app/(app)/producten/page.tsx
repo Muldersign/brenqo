@@ -42,7 +42,7 @@ export default function ProductsPage() {
                 <div className="text-[15px] font-semibold">{p.name}</div>
                 <div className="mt-0.5 line-clamp-2 text-[13px] text-muted">{p.description}</div>
                 <div className="mt-3 flex items-baseline gap-1">
-                  <span className="tabular font-display text-[20px] font-bold">{formatEUR(p.price)}</span>
+                  <span className="tabular font-display text-[20px] font-semibold">{formatEUR(p.price)}</span>
                   <span className="text-[13px] text-muted">per {p.unit}{org.vatRegistered ? ` · ${p.vatRate}% btw` : ''}</span>
                 </div>
               </div>

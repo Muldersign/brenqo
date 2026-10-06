@@ -140,7 +140,7 @@ function Stat({ label, value, d, invert, sub }: { label: string; value: number; 
   return (
     <Card className="p-4 sm:p-5">
       <div className="text-[13px] font-medium text-muted">{label}</div>
-      <div className="mt-2 font-display text-[22px] font-bold tracking-[-0.03em] sm:text-[28px]"><AnimatedNumber value={value} /></div>
+      <div className="mt-2 font-display text-[22px] font-semibold tracking-[-0.03em] sm:text-[28px]"><AnimatedNumber value={value} /></div>
       <div className="mt-1.5 text-[12.5px] text-muted">
         {d !== null && d !== undefined ? <span className={cn('font-semibold', good ? 'text-success-600' : 'text-warning-700')}>{d >= 0 ? '+' : ''}{Math.round(d)}% </span> : null}
         {d !== null && d !== undefined ? 'vs vorige periode' : sub}

@@ -31,7 +31,7 @@ function PublicQuote() {
   const [confirming, setConfirming] = useState(false);
 
   if (!quote || !org || quote.state === 'draft') {
-    return <div className="pt-16 text-center"><FileX className="mx-auto size-8 text-muted" /><h1 className="mt-4 font-display text-[22px] font-bold">Offerte niet gevonden</h1></div>;
+    return <div className="pt-16 text-center"><FileX className="mx-auto size-8 text-muted" /><h1 className="mt-4 font-display text-[22px] font-semibold">Offerte niet gevonden</h1></div>;
   }
   const status = quoteStatus(quote, todayISO());
   const total = documentTotals(quote.lines).total;
@@ -44,7 +44,7 @@ function PublicQuote() {
       </div>
       <div className="mt-8 overflow-hidden rounded-[28px] border border-line bg-surface p-6 text-center shadow-pop sm:p-10">
         <div className="text-[14px] text-muted">Offerte {quote.number} voor {customer?.companyName}</div>
-        <div className="tabular mt-2 font-display text-[44px] font-bold leading-none tracking-[-0.04em]">{formatEUR(total)}</div>
+        <div className="tabular mt-2 font-display text-[44px] font-semibold leading-none tracking-[-0.04em]">{formatEUR(total)}</div>
         <div className="mt-4 flex items-center justify-center gap-2 text-[13.5px] text-muted"><QuoteStatusBadge status={status} />{status === 'sent' && <span className="flex items-center gap-1"><CalendarClock className="size-3.5" /> Geldig tot {formatDateLong(quote.validUntil)}</span>}</div>
         {status === 'sent' && (
           <div className="mx-auto mt-8 grid max-w-sm gap-2.5">

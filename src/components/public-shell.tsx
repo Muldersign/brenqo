@@ -14,7 +14,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
     try { if (!localStorage.getItem('brenqo-data')) useStore.setState({}); } catch { /* ignore */ }
   }, []);
   return (
-    <div className="min-h-dvh bg-[radial-gradient(1000px_400px_at_50%_-10%,rgba(108,92,244,0.10),transparent)] px-4 pb-16 pt-[max(2rem,env(safe-area-inset-top))]">
+    <div className="min-h-dvh bg-canvas px-4 pb-16 pt-[max(2rem,env(safe-area-inset-top))]">
       <div className="mx-auto max-w-[620px]">
         {hydrated ? children : (
           <div className="space-y-4 pt-10">

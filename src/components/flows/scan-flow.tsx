@@ -135,21 +135,21 @@ export function ScanFlow() {
             <AnimatePresence mode="wait">
               {step === 'choose' && (
                 <motion.div key="choose" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                  <h2 className="font-display text-[22px] font-bold">{isReceipt ? 'Bon toevoegen' : 'Inkoopfactuur toevoegen'}</h2>
+                  <h2 className="font-display text-[22px] font-semibold">{isReceipt ? 'Bon toevoegen' : 'Inkoopfactuur toevoegen'}</h2>
                   <p className="mt-1 text-[14px] text-muted">Wij lezen leverancier, bedrag, datum en btw automatisch uit. Jij hoeft alleen te controleren.</p>
                   <div className="mt-5 grid gap-3">
-                    <button onClick={() => cameraRef.current?.click()} className="group flex items-center gap-4 rounded-[20px] bg-brand-600 p-5 text-left text-white shadow-brand transition active:scale-[0.99]">
-                      <div className="grid size-12 place-items-center rounded-2xl bg-white/15"><Camera className="size-6" /></div>
+                    <button onClick={() => cameraRef.current?.click()} className="group flex items-center gap-4 rounded-[24px] bg-ink p-5 text-left text-[#fafafa] transition active:scale-[0.99]">
+                      <div className="grid size-12 place-items-center rounded-full bg-white/10"><Camera className="size-5" /></div>
                       <div>
                         <div className="text-[16px] font-semibold">Maak foto</div>
-                        <div className="text-[13px] text-white/75">Leg de {isReceipt ? 'bon' : 'factuur'} plat neer, wij doen de rest</div>
+                        <div className="text-[13px] text-white/60">Leg de {isReceipt ? 'bon' : 'factuur'} plat neer, wij doen de rest</div>
                       </div>
                     </button>
                     <button
                       onClick={() => fileRef.current?.click()}
-                      className={cn('flex items-center gap-4 rounded-[20px] border-2 border-dashed p-5 text-left transition', dragging ? 'border-brand-400 bg-brand-50' : 'border-line-strong hover:border-brand-300 hover:bg-subtle')}
+                      className={cn('flex items-center gap-4 rounded-[24px] border border-dashed p-5 text-left transition', dragging ? 'border-ink bg-subtle' : 'border-[#d4d4d4] hover:border-ink')}
                     >
-                      <div className="grid size-12 place-items-center rounded-2xl bg-subtle text-brand-600 ring-1 ring-line"><Upload className="size-6" /></div>
+                      <div className="grid size-12 place-items-center rounded-full bg-canvas text-ink"><Upload className="size-5" /></div>
                       <div>
                         <div className="text-[16px] font-semibold">Upload bestand</div>
                         <div className="text-[13px] text-muted">Of sleep het hierheen · JPG, PNG, HEIC of PDF</div>
@@ -157,8 +157,8 @@ export function ScanFlow() {
                     </button>
                   </div>
                   {!isReceipt && (
-                    <div className="mt-4 rounded-2xl bg-subtle p-4 text-[13px] text-ink-2 ring-1 ring-line">
-                      <span className="font-medium">Tip:</span> laat leveranciers facturen sturen naar <span className="font-medium text-brand-700">{org.inboxAddress}</span>. Dan staan ze hier vanzelf klaar.
+                    <div className="mt-4 rounded-[18px] bg-canvas p-4 text-[13px] text-ink">
+                      <span className="font-medium">Tip:</span> laat leveranciers facturen sturen naar <span className="font-medium underline decoration-line underline-offset-2">{org.inboxAddress}</span>. Dan staan ze hier vanzelf klaar.
                     </div>
                   )}
                 </motion.div>
@@ -166,50 +166,50 @@ export function ScanFlow() {
 
               {step === 'scanning' && (
                 <motion.div key="scan" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center py-8 text-center">
-                  <div className="relative h-[220px] w-[170px] overflow-hidden rounded-[18px] border border-line bg-gradient-to-b from-white to-subtle shadow-raised">
+                  <div className="relative h-[220px] w-[170px] overflow-hidden rounded-[18px] border border-line bg-surface shadow-card">
                     <div className="space-y-2.5 p-5">
                       <div className="skeleton h-3 w-20" />
                       <div className="skeleton h-2 w-28" />
                       <div className="mt-5 space-y-2">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="flex justify-between"><div className="skeleton h-2 w-16" /><div className="skeleton h-2 w-8" /></div>)}</div>
                       <div className="mt-4 flex justify-between"><div className="skeleton h-3 w-12" /><div className="skeleton h-3 w-14" /></div>
                     </div>
-                    <div className="absolute inset-x-3 h-12 animate-scan rounded-full bg-gradient-to-b from-brand-400/0 via-brand-400/25 to-brand-400/0">
-                      <div className="absolute inset-x-0 top-1/2 h-[2px] bg-brand-500 shadow-[0_0_12px_2px_rgba(108,92,244,0.6)]" />
+                    <div className="absolute inset-x-3 h-12 animate-scan">
+                      <div className="absolute inset-x-0 top-1/2 h-px bg-ink" />
                     </div>
                   </div>
-                  <div className="mt-7 flex items-center gap-2 font-display text-[18px] font-semibold"><ScanLine className="size-5 text-brand-600" />{isReceipt ? 'Bon wordt herkend…' : 'Factuur wordt gelezen…'}</div>
+                  <div className="mt-7 flex items-center gap-2 font-display text-[18px] font-semibold"><ScanLine className="size-5" />{isReceipt ? 'Bon wordt herkend…' : 'Factuur wordt gelezen…'}</div>
                   <p className="mt-1 text-[13.5px] text-muted">{progress < 40 ? 'Tekst herkennen' : progress < 75 ? 'Bedragen en btw controleren' : 'Categorie voorstellen'}</p>
-                  <div className="mt-5 h-1.5 w-56 overflow-hidden rounded-full bg-[#ececf1]"><div className="h-full rounded-full bg-brand-500 transition-[width] duration-300" style={{ width: `${progress}%` }} /></div>
+                  <div className="mt-5 h-1.5 w-56 overflow-hidden rounded-full bg-canvas"><div className="h-full rounded-full bg-ink transition-[width] duration-300" style={{ width: `${progress}%` }} /></div>
                 </motion.div>
               )}
 
               {step === 'review' && draft && (
                 <motion.div key="review" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                  <div className="flex items-center gap-2 text-[13px] font-medium text-success-600">
+                  <div className="flex items-center gap-2 text-[13px] font-medium text-ink">
                     <Sparkles className="size-4" /> {isReceipt ? 'Je bon is uitgelezen' : 'Je factuur is uitgelezen'}
                     {draft.engine === 'demo' && <span className="rounded-full bg-subtle px-2 py-0.5 text-[11px] font-medium text-muted ring-1 ring-line">demo</span>}
                   </div>
-                  <div className="mt-3 overflow-hidden rounded-[22px] border border-line bg-gradient-to-b from-subtle to-surface">
+                  <div className="mt-3 overflow-hidden rounded-[24px] border border-line bg-surface shadow-card">
                     <div className="flex items-center gap-4 p-5">
                       <DocThumb preview={draft.preview} mime={draft.mimeType} />
                       <div className="min-w-0">
-                        <div className="truncate font-display text-[20px] font-bold">{draft.supplierName || 'Onbekend'}</div>
+                        <div className="truncate font-display text-[20px] font-semibold">{draft.supplierName || 'Onbekend'}</div>
                         <div className="text-[13.5px] text-muted">{formatDateLong(draft.date)}</div>
                       </div>
                     </div>
                     <div className="border-t border-line px-5 py-5">
-                      <div className="font-display text-[40px] font-bold leading-none tracking-[-0.03em] tabular">{formatEUR(draft.total)}</div>
+                      <div className="text-[44px] font-semibold leading-none tracking-display tabular">{formatEUR(draft.total)}</div>
                       <div className="mt-2 text-[14px] text-muted">waarvan <span className="font-medium text-ink-2 tabular">{formatEUR(draft.vatAmount)}</span> btw ({draft.vatRate}%)</div>
                     </div>
                     <div className="flex items-center justify-between gap-3 border-t border-line px-5 py-4">
                       <div className="flex items-center gap-2.5 text-[14px] font-medium">
-                        <span className="grid size-8 place-items-center rounded-[10px] bg-brand-50 text-brand-600"><CategoryIcon name={draft.category} /></span>
+                        <span className="grid size-8 place-items-center rounded-full bg-canvas text-ink"><CategoryIcon name={draft.category} /></span>
                         {draft.category}
                       </div>
                       {draft.invoiceNumber && <span className="text-[12.5px] text-muted">nr. {draft.invoiceNumber}</span>}
                     </div>
                     {draft.memory === 'memory' && (
-                      <div className="flex items-start gap-2 border-t border-line bg-brand-50/60 px-5 py-3 text-[12.5px] text-brand-800">
+                      <div className="flex items-start gap-2 border-t border-line bg-subtle px-5 py-3 text-[12.5px] text-ink">
                         <Brain className="mt-0.5 size-3.5 shrink-0" /> {draft.supplierName} wordt normaal geboekt als {draft.category.toLowerCase()}. We hebben dat alvast ingevuld.
                       </div>
                     )}
@@ -224,7 +224,7 @@ export function ScanFlow() {
 
               {step === 'edit' && draft && (
                 <motion.div key="edit" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="space-y-4">
-                  <h2 className="font-display text-[20px] font-bold">Gegevens aanpassen</h2>
+                  <h2 className="font-display text-[20px] font-semibold">Gegevens aanpassen</h2>
                   <Field label="Leverancier"><Input value={draft.supplierName} onChange={(e) => {
                     const g = guessCategory(e.target.value, suppliers);
                     set({ supplierName: e.target.value, ...(g.source !== 'none' ? { category: g.category } : {}) });
@@ -270,10 +270,10 @@ export function ScanFlow() {
 
               {step === 'done' && draft && (
                 <motion.div key="done" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center py-10 text-center">
-                  <div className="grid size-20 animate-pop place-items-center rounded-full bg-success-50 ring-8 ring-success-50/50">
-                    <div className="grid size-14 place-items-center rounded-full bg-success-500 text-white shadow-[0_10px_24px_-8px_rgba(22,163,90,0.7)]"><Check className="size-7" strokeWidth={3} /></div>
+                  <div className="grid size-20 animate-pop place-items-center rounded-full bg-canvas">
+                    <div className="grid size-14 place-items-center rounded-full bg-ink text-[#fafafa]"><Check className="size-7" strokeWidth={2.5} /></div>
                   </div>
-                  <h2 className="mt-6 font-display text-[22px] font-bold">{isReceipt ? 'Bon opgeslagen' : 'Inkoopfactuur opgeslagen'}</h2>
+                  <h2 className="mt-6 font-display text-[22px] font-semibold">{isReceipt ? 'Bon opgeslagen' : 'Inkoopfactuur opgeslagen'}</h2>
                   <p className="mt-1.5 max-w-xs text-[14px] text-muted">
                     {formatEUR(draft.total)} bij {draft.supplierName} staat in je kosten. Je btw-overzicht is bijgewerkt.
                   </p>
@@ -294,13 +294,13 @@ export function ScanFlow() {
 export function DocThumb({ preview, mime, className }: { preview?: string; mime: string; className?: string }) {
   if (preview) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={preview} alt="" className={cn('h-16 w-12 shrink-0 rounded-[10px] object-cover shadow-raised ring-1 ring-line', className)} />;
+    return <img src={preview} alt="" className={cn('h-16 w-12 shrink-0 rounded-[10px] object-cover ring-1 ring-line', className)} />;
   }
   const pdf = mime.includes('pdf');
   return (
-    <div className={cn('relative grid h-16 w-12 shrink-0 place-items-center rounded-[10px] bg-surface shadow-raised ring-1 ring-line', className)}>
-      <FileText className={cn('size-5', pdf ? 'text-danger-500' : 'text-muted')} />
-      <span className={cn('absolute bottom-1.5 rounded px-1 text-[8.5px] font-bold uppercase', pdf ? 'bg-danger-50 text-danger-600' : 'bg-subtle text-muted')}>{pdf ? 'pdf' : 'img'}</span>
+    <div className={cn('relative grid h-16 w-12 shrink-0 place-items-center rounded-[10px] bg-surface ring-1 ring-line', className)}>
+      <FileText className="size-5 text-ink" />
+      <span className="absolute bottom-1.5 rounded-[4px] bg-canvas px-1 text-[8.5px] font-semibold uppercase text-muted">{pdf ? 'pdf' : 'img'}</span>
     </div>
   );
 }

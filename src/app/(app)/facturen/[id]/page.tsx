@@ -75,7 +75,7 @@ export default function InvoiceDetailPage() {
           <Button variant="ghost" size="icon" asChild><Link href="/facturen" aria-label="Terug"><ArrowLeft className="!size-5" /></Link></Button>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="font-display text-[24px] font-bold sm:text-[28px]">{inv.kind === 'credit' ? 'Creditfactuur ' : 'Factuur '}{inv.number || 'concept'}</h1>
+              <h1 className="font-display text-[24px] font-semibold sm:text-[28px]">{inv.kind === 'credit' ? 'Creditfactuur ' : 'Factuur '}{inv.number || 'concept'}</h1>
               <InvoiceStatusBadge status={status} />
             </div>
             <Link href={`/klanten/${customer?.id}`} className="text-[14px] text-muted hover:text-brand-600">{customer?.companyName}</Link>
@@ -99,7 +99,7 @@ export default function InvoiceDetailPage() {
           {/* Amount + progress */}
           <Card className="overflow-hidden p-5">
             <div className="text-[13px] font-medium text-muted">{status === 'paid' ? 'Volledig betaald' : status === 'credited' ? 'Gecrediteerd' : status === 'draft' ? 'Totaal' : 'Nog te ontvangen'}</div>
-            <div className="tabular mt-1 font-display text-[34px] font-bold tracking-[-0.03em]">{formatEUR(status === 'paid' || status === 'draft' || status === 'credited' ? total : due)}</div>
+            <div className="tabular mt-1 font-display text-[34px] font-semibold tracking-[-0.03em]">{formatEUR(status === 'paid' || status === 'draft' || status === 'credited' ? total : due)}</div>
             {isOpen && (
               <>
                 <Progress value={(paid / total) * 100} tone={status === 'overdue' ? 'danger' : 'success'} className="mt-4" />

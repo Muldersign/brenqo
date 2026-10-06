@@ -47,15 +47,13 @@ export default function AccountsPage() {
             const consentDays = daysBetween(today, a.consentValidUntil);
             return (
               <Card key={a.id} className="overflow-hidden">
-                <div className="relative overflow-hidden p-5 text-white" style={{ background: `linear-gradient(135deg, ${a.color}, color-mix(in srgb, ${a.color} 55%, #000))` }}>
-                  <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-white/10" />
-                  <div className="pointer-events-none absolute -bottom-16 right-10 size-32 rounded-full bg-white/5" />
-                  <div className="relative flex items-center justify-between">
+                <div className="relative overflow-hidden bg-ink p-5 text-[#fafafa]">
+                                    <div className="relative flex items-center justify-between">
                     <span className="text-[14px] font-semibold">{a.bankName}</span>
                     <Landmark className="size-5 opacity-80" />
                   </div>
                   <div className="relative mt-6 text-[12.5px] opacity-75">{a.name}</div>
-                  <div className="tabular relative font-display text-[28px] font-bold tracking-[-0.02em]">{formatEUR(a.balance)}</div>
+                  <div className="tabular relative font-display text-[28px] font-semibold tracking-[-0.02em]">{formatEUR(a.balance)}</div>
                   <div className="relative mt-1 font-mono text-[12.5px] tracking-wider opacity-80">{a.iban.replace(/(.{4})/g, '$1 ').trim()}</div>
                 </div>
                 <div className="space-y-2.5 p-5 text-[13px]">
@@ -79,7 +77,7 @@ export default function AccountsPage() {
           <div className="grid gap-1.5">
             {BANKS.map((b) => (
               <button key={b[0]} onClick={() => connect(b)} className="flex items-center gap-3 rounded-[14px] p-2.5 text-left transition hover:bg-subtle">
-                <span className="grid size-9 place-items-center rounded-[10px] text-[12px] font-bold text-white" style={{ background: b[1] }}>{b[0].slice(0, 2)}</span>
+                <span className="grid size-9 place-items-center rounded-[10px] text-[12px] font-semibold text-white" style={{ background: b[1] }}>{b[0].slice(0, 2)}</span>
                 <span className="flex-1 text-[14.5px] font-medium">{b[0]}</span>
                 <ChevronRight className="size-4 text-faint" />
               </button>
@@ -91,7 +89,7 @@ export default function AccountsPage() {
             <div className="flex items-center gap-3">
               <span className="grid size-12 place-items-center rounded-2xl bg-brand-600 text-white"><Lock className="size-5" /></span>
               <LoaderCircle className="size-5 animate-spin text-faint" />
-              <span className="grid size-12 place-items-center rounded-2xl text-[14px] font-bold text-white" style={{ background: bank[1] }}>{bank[0].slice(0, 2)}</span>
+              <span className="grid size-12 place-items-center rounded-2xl text-[14px] font-semibold text-white" style={{ background: bank[1] }}>{bank[0].slice(0, 2)}</span>
             </div>
             <div className="mt-5 font-semibold">Veilig verbinden met {bank[0]}…</div>
             <p className="mt-1 text-[13px] text-muted">In het echt log je nu in bij je bank-app en geef je toestemming.</p>

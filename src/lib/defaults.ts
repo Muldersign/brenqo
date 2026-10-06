@@ -96,7 +96,7 @@ export function blankOrganization(id: string, name: string, year: number): Organ
     email: '',
     phone: '',
     website: '',
-    accentColor: '#5B4BF5',
+    accentColor: '#171717',
     invoicePrefix: `${year}-`,
     nextInvoiceNumber: 1,
     quotePrefix: `OF-${year}-`,

@@ -23,7 +23,7 @@ export function Topbar() {
 
         <button
           onClick={() => setSearchOpen(true)}
-          className="group hidden h-10 w-full max-w-[440px] items-center gap-2.5 rounded-[12px] border border-line bg-surface px-3.5 text-[14px] text-faint shadow-card transition hover:border-line-strong lg:flex"
+          className="group hidden h-9 w-full max-w-[420px] items-center gap-2.5 rounded-full bg-surface px-3.5 text-[14px] text-muted shadow-card transition hover:bg-subtle lg:flex"
         >
           <Search className="size-4 text-muted" />
           <span className="flex-1 text-left">Zoek klant, factuur, bedrag…</span>
@@ -31,13 +31,13 @@ export function Topbar() {
         </button>
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
-          <button onClick={() => setSearchOpen(true)} className="grid size-10 place-items-center rounded-[12px] text-ink-2 hover:bg-black/[0.04] lg:hidden" aria-label="Zoeken">
+          <button onClick={() => setSearchOpen(true)} className="grid size-9 place-items-center rounded-full text-ink hover:bg-surface lg:hidden" aria-label="Zoeken">
             <Search className="size-[19px]" />
           </button>
           <NotificationsButton />
           <NewMenu className="hidden sm:inline-flex" />
           <Link href="/instellingen" className="hidden lg:block" aria-label={`Instellingen ${org.name}`}>
-            <OrgLogo size={34} className="rounded-[11px]" />
+            <OrgLogo size={34} className="rounded-full" />
           </Link>
         </div>
       </div>

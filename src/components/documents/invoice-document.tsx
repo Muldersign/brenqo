@@ -30,16 +30,16 @@ export function InvoiceDocument({ org, customer, doc, className }: { org: Organi
 
   return (
     <div className={cn('relative overflow-hidden bg-white text-[#1d1d24]', className)} style={{ ['--accent' as string]: org.accentColor }}>
-      <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${org.accentColor}, color-mix(in srgb, ${org.accentColor} 55%, #ffffff))` }} />
+      <div className="h-1" style={{ background: org.accentColor }} />
       <div className="px-7 py-8 sm:px-12 sm:py-11">
         <div className="flex flex-col-reverse justify-between gap-6 sm:flex-row sm:items-start">
           <div>
             <div className="text-[12px] font-semibold uppercase tracking-[0.14em]" style={{ color: org.accentColor }}>{title}</div>
-            <div className="mt-1 font-display text-[30px] font-bold tracking-[-0.03em]">{doc.number || 'Concept'}</div>
+            <div className="mt-1 text-[30px] font-semibold tracking-[-0.04em]">{doc.number || 'Concept'}</div>
           </div>
           <div className="flex items-center gap-3 sm:flex-col sm:items-end sm:gap-2">
             <OrgMark org={org} size={44} className="rounded-[12px]" />
-            <div className="font-display text-[15px] font-bold sm:text-right">{org.tradeName || org.name}</div>
+            <div className="font-display text-[15px] font-semibold sm:text-right">{org.tradeName || org.name}</div>
           </div>
         </div>
 
@@ -97,7 +97,7 @@ export function InvoiceDocument({ org, customer, doc, className }: { org: Organi
             ))}
             <div className="mt-3 flex items-baseline justify-between border-t border-[#ececf1] pt-3">
               <span className="font-semibold">Totaal</span>
-              <span className="tabular font-display text-[22px] font-bold tracking-[-0.02em]">{formatEUR(t.total)}</span>
+              <span className="tabular font-display text-[22px] font-semibold tracking-[-0.02em]">{formatEUR(t.total)}</span>
             </div>
             {!!doc.paidAmount && doc.paidAmount > 0 && (
               <>

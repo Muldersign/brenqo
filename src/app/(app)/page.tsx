@@ -122,11 +122,10 @@ export default function DashboardPage() {
     <div className="animate-fade-in">
       {/* Hero */}
       <section className="relative -mx-4 mb-6 overflow-hidden px-4 pb-2 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
-        <div className="pointer-events-none absolute inset-0 hero-gradient" />
-        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="text-[13.5px] font-medium text-muted first-letter:uppercase">{new Intl.DateTimeFormat('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}</div>
-            <h1 className="mt-1 font-display text-[28px] font-bold leading-tight sm:text-[34px]">{greeting()}, {user.name.split(' ')[0]}</h1>
+            <h1 className="mt-1 text-[30px] font-semibold leading-[1.1] tracking-display sm:text-[48px]">{greeting()}, {user.name.split(' ')[0]}</h1>
             <p className="mt-1.5 text-[15px] text-muted">
               {attentionItems.filter((i) => i.tone !== 'neutral').length === 0 ? 'Alles staat goed. Er is niets dat je aandacht nodig heeft.' : `Zo staat ${org.name} ervoor. Een paar dingen vragen even je aandacht.`}
             </p>
@@ -139,12 +138,12 @@ export default function DashboardPage() {
         {/* Mobile: the most-used action, big */}
         <button
           onClick={() => openScan('receipt', true)}
-          className="relative mt-5 flex w-full items-center gap-4 rounded-[22px] bg-gradient-to-br from-brand-500 to-brand-700 p-4 text-left text-white shadow-brand active:scale-[0.99] sm:hidden"
+          className="relative mt-5 flex w-full items-center gap-4 rounded-[24px] bg-ink p-4 text-left text-[#fafafa] active:scale-[0.99] sm:hidden"
         >
-          <div className="grid size-12 place-items-center rounded-2xl bg-white/15"><Camera className="size-6" /></div>
+          <div className="grid size-12 place-items-center rounded-full bg-white/10"><Camera className="size-5" /></div>
           <div className="flex-1">
             <div className="text-[16px] font-semibold">Bon scannen</div>
-            <div className="text-[13px] text-white/75">Foto maken, wij lezen hem uit</div>
+            <div className="text-[13px] text-white/60">Foto maken, wij lezen hem uit</div>
           </div>
           <ChevronRight className="size-5 text-white/70" />
         </button>
@@ -204,13 +203,13 @@ export default function DashboardPage() {
           <div className="p-2 pt-3">
             {attentionItems.length === 0 ? (
               <div className="flex flex-col items-center px-6 py-10 text-center">
-                <div className="grid size-14 place-items-center rounded-2xl bg-success-50 text-success-600"><PartyPopper className="size-6" /></div>
+                <div className="grid size-14 place-items-center rounded-full bg-canvas text-ink"><PartyPopper className="size-6" /></div>
                 <div className="mt-4 font-display text-[16px] font-semibold">Alles is bij 🎉</div>
                 <div className="mt-1 text-[13.5px] text-muted">Er staat niets meer open dat je aandacht nodig heeft.</div>
               </div>
             ) : (
               attentionItems.map((a) => (
-                <Link key={a.title} href={a.href} className="group flex items-center gap-3.5 rounded-[14px] px-3.5 py-3 transition hover:bg-subtle">
+                <Link key={a.title} href={a.href} className="group flex items-center gap-3.5 rounded-[18px] px-3.5 py-3 transition hover:bg-subtle">
                   <IconTile tone={a.tone}>{a.icon}</IconTile>
                   <div className="min-w-0 flex-1">
                     <div className="text-[14px] font-medium text-ink">{a.title}</div>
@@ -239,13 +238,13 @@ export default function DashboardPage() {
       {/* Lists */}
       <section className="mt-4 grid grid-cols-1 gap-4 sm:mt-5 lg:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
         <Card className="xl:col-span-1">
-          <CardHeader title="Openstaande facturen" action={<Link href="/facturen?filter=open" className="text-[13px] font-medium text-brand-600 hover:text-brand-700">Alles</Link>} />
+          <CardHeader title="Openstaande facturen" action={<Link href="/facturen?filter=open" className="rounded-full bg-canvas px-3 py-1 text-[12.5px] font-medium text-ink hover:bg-[#ebebeb]">Alles</Link>} />
           <div className="p-2 pt-3">
             {openList.length === 0 && <div className="px-4 py-8 text-center text-[13.5px] text-muted">Alles is betaald. Lekker!</div>}
             {openList.map((r) => {
               const days = daysBetween(today, r.inv.dueDate);
               return (
-                <Link key={r.inv.id} href={`/facturen/${r.inv.id}`} className="flex items-center gap-3 rounded-[14px] px-3 py-2.5 transition hover:bg-subtle">
+                <Link key={r.inv.id} href={`/facturen/${r.inv.id}`} className="flex items-center gap-3 rounded-[18px] px-3 py-2.5 transition hover:bg-subtle">
                   <Avatar name={r.customer?.companyName ?? '?'} size={36} />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-[14px] font-medium">{r.customer?.companyName}</div>
@@ -264,11 +263,11 @@ export default function DashboardPage() {
         </Card>
 
         <Card>
-          <CardHeader title="Recente transacties" action={<Link href="/bank" className="text-[13px] font-medium text-brand-600 hover:text-brand-700">Bank</Link>} />
+          <CardHeader title="Recente transacties" action={<Link href="/bank" className="rounded-full bg-canvas px-3 py-1 text-[12.5px] font-medium text-ink hover:bg-[#ebebeb]">Bank</Link>} />
           <div className="p-2 pt-3">
             {recentTx.map((t) => (
-              <Link key={t.id} href={`/bank?tx=${t.id}`} className="flex items-center gap-3 rounded-[14px] px-3 py-2.5 transition hover:bg-subtle">
-                <div className={cn('grid size-9 shrink-0 place-items-center rounded-[11px]', t.amount > 0 ? 'bg-success-50 text-success-600' : 'bg-subtle text-muted ring-1 ring-line')}>
+              <Link key={t.id} href={`/bank?tx=${t.id}`} className="flex items-center gap-3 rounded-[18px] px-3 py-2.5 transition hover:bg-subtle">
+                <div className={cn('grid size-9 shrink-0 place-items-center rounded-full', t.amount > 0 ? 'bg-ink-2 text-[#fafafa]' : 'bg-canvas text-ink')}>
                   {t.amount > 0 ? <ArrowDownRight className="size-4" /> : <ArrowUpRight className="size-4" />}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -286,12 +285,12 @@ export default function DashboardPage() {
           <div className="p-2 pt-3">
             {toReview.length === 0 ? (
               <div className="flex flex-col items-center px-6 py-8 text-center">
-                <Sparkles className="size-6 text-brand-500" />
+                <Sparkles className="size-6 text-ink" />
                 <div className="mt-3 text-[14px] font-medium">Geen bonnetjes meer te verwerken 🎉</div>
               </div>
             ) : (
               toReview.map((e) => (
-                <Link key={e.id} href={e.kind === 'receipt' ? `/bonnetjes?open=${e.id}` : `/inkoopfacturen?open=${e.id}`} className="flex items-center gap-3 rounded-[14px] px-3 py-2.5 transition hover:bg-subtle">
+                <Link key={e.id} href={e.kind === 'receipt' ? `/bonnetjes?open=${e.id}` : `/inkoopfacturen?open=${e.id}`} className="flex items-center gap-3 rounded-[18px] px-3 py-2.5 transition hover:bg-subtle">
                   <DocThumb preview={e.document.previewDataUrl} mime={e.document.mimeType} className="h-11 w-9" />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-[14px] font-medium">{e.supplierName}</div>
@@ -301,7 +300,7 @@ export default function DashboardPage() {
                 </Link>
               ))
             )}
-            <div className="mx-3 mt-2 flex items-center gap-2 rounded-xl bg-subtle px-3 py-2.5 text-[12.5px] text-muted ring-1 ring-line">
+            <div className="mx-3 mt-2 flex items-center gap-2 rounded-[18px] bg-canvas px-3.5 py-2.5 text-[12.5px] text-muted">
               <FileInput className="size-3.5 shrink-0" /> Facturen mailen naar <span className="truncate font-medium text-ink-2">{org.inboxAddress}</span>
             </div>
           </div>
@@ -341,7 +340,7 @@ function DeltaPill({ value, suffix, invert }: { value: number; suffix: string; i
   const good = invert ? !up : up;
   return (
     <span className="flex items-center gap-1.5 text-[12.5px] text-muted">
-      <span className={cn('inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11.5px] font-semibold', good ? 'bg-success-50 text-success-700' : 'bg-warning-50 text-warning-700')}>
+      <span className={cn('inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11.5px] font-medium', good ? 'bg-ink-2 text-[#fafafa]' : 'bg-canvas text-ink')}>
         {up ? <ArrowUpRight className="size-3" /> : <ArrowDownRight className="size-3" />}
         {Math.abs(Math.round(value))}%
       </span>
@@ -355,13 +354,12 @@ function KpiCard({
 }: { label: string; icon: React.ReactNode; value: number; foot: React.ReactNode; spark?: number[]; sparkColor?: string; href: string; highlight?: boolean; bar?: { value: number } }) {
   return (
     <Link href={href} className="group block">
-      <Card className={cn('relative h-full overflow-hidden p-4 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:shadow-raised sm:p-5', highlight && 'border-brand-100')}>
-        {highlight && <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(400px_140px_at_0%_0%,rgba(108,92,244,0.09),transparent)]" />}
-        <div className="relative flex items-center justify-between">
-          <span className="truncate text-[13px] font-medium text-muted first-letter:uppercase">{label}</span>
-          <span className="hidden size-7 place-items-center rounded-lg bg-subtle text-muted ring-1 ring-line sm:grid [&_svg]:size-3.5">{icon}</span>
+      <Card className={cn('relative h-full overflow-hidden p-4 transition-all duration-200 group-hover:shadow-raised sm:p-5', highlight && 'bg-surface')}>
+                <div className="relative flex items-center justify-between">
+          <span className="truncate text-[12px] font-medium uppercase tracking-[0.05em] text-muted">{label}</span>
+          <span className="hidden size-7 place-items-center rounded-full bg-canvas text-ink sm:grid [&_svg]:size-3.5">{icon}</span>
         </div>
-        <div className="relative mt-2.5 font-display text-[24px] font-bold leading-none tracking-[-0.03em] sm:mt-3 sm:text-[32px]">
+        <div className="relative mt-3 text-[26px] font-semibold leading-[1.1] tracking-display sm:text-[36px]">
           <AnimatedNumber value={value} />
         </div>
         <div className="relative mt-3 flex min-h-[22px] items-end justify-between gap-3">
@@ -369,8 +367,8 @@ function KpiCard({
           {spark && <div className="hidden h-8 w-20 shrink-0 sm:block"><Sparkline values={spark} color={sparkColor} height={32} /></div>}
         </div>
         {bar && (
-          <div className="relative mt-3 flex h-1.5 overflow-hidden rounded-full bg-danger-100" title="Binnen termijn / verlopen">
-            <div className="h-full rounded-full bg-brand-500" style={{ width: `${bar.value}%` }} />
+          <div className="relative mt-3 flex h-1.5 overflow-hidden rounded-full bg-danger-500" title="Binnen termijn / verlopen">
+            <div className="h-full rounded-full bg-ink" style={{ width: `${bar.value}%` }} />
           </div>
         )}
       </Card>
@@ -383,8 +381,8 @@ function QuickStat({ icon, label, value, href }: { icon: React.ReactNode; label:
     <Card className="flex h-full items-center gap-3 p-4 transition hover:shadow-raised">
       <IconTile>{icon}</IconTile>
       <div className="min-w-0">
-        <div className="truncate text-[12.5px] text-muted">{label}</div>
-        <div className="tabular truncate font-display text-[16px] font-semibold">{value}</div>
+        <div className="truncate text-[12px] font-medium uppercase tracking-[0.05em] text-muted">{label}</div>
+        <div className="tabular truncate text-[16px] font-semibold tracking-[-0.02em]">{value}</div>
       </div>
     </Card>
   );

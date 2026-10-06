@@ -35,7 +35,7 @@ function NumberInput({ value, onChange, className, prefix, ariaLabel }: { value:
         onFocus={(e) => e.target.select()}
         onChange={(e) => { setText(e.target.value); onChange(parseAmount(e.target.value)); }}
         onBlur={() => setText(null)}
-        className={cn('tabular h-10 w-full rounded-[11px] border border-line-strong bg-surface px-3 text-right outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100', prefix && 'pl-7')}
+        className={cn('tabular h-10 w-full rounded-[11px] border border-line-strong bg-surface px-3 text-right outline-none transition focus:border-ink focus:ring-4 focus:ring-brand-100', prefix && 'pl-7')}
       />
     </div>
   );
@@ -76,7 +76,7 @@ export function LinesEditor({ lines, onChange, showVat = true }: { lines: Docume
                       onChange={(e) => { update(l.id, { description: e.target.value }); setSuggestFor(l.id); }}
                       onBlur={() => setTimeout(() => setSuggestFor(null), 150)}
                       placeholder="Wat heb je geleverd?"
-                      className="h-10 w-full rounded-[11px] border border-line-strong bg-surface px-3 outline-none transition placeholder:text-faint focus:border-brand-400 focus:ring-4 focus:ring-brand-100"
+                      className="h-10 w-full rounded-[11px] border border-line-strong bg-surface px-3 outline-none transition placeholder:text-faint focus:border-ink focus:ring-4 focus:ring-brand-100"
                     />
                     {matches.length > 0 && (
                       <div className="absolute left-0 right-0 top-11 z-20 overflow-hidden rounded-[14px] border border-line bg-surface p-1 shadow-pop @3xl:left-5">
@@ -96,12 +96,12 @@ export function LinesEditor({ lines, onChange, showVat = true }: { lines: Docume
                     )}
                   </div>
                   <NumberInput ariaLabel="Aantal" value={l.quantity} onChange={(n) => update(l.id, { quantity: n })} />
-                  <select value={l.unit} onChange={(e) => update(l.id, { unit: e.target.value })} className="h-10 rounded-[11px] border border-line-strong bg-surface px-2.5 outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" aria-label="Eenheid">
+                  <select value={l.unit} onChange={(e) => update(l.id, { unit: e.target.value })} className="h-10 rounded-[11px] border border-line-strong bg-surface px-2.5 outline-none focus:border-ink focus:ring-4 focus:ring-brand-100" aria-label="Eenheid">
                     {[...new Set([l.unit, ...UNITS])].map((u) => <option key={u}>{u}</option>)}
                   </select>
                   <NumberInput ariaLabel="Prijs" prefix="€" value={l.unitPrice} onChange={(n) => update(l.id, { unitPrice: n })} />
                   {showVat ? (
-                    <select value={l.vatRate} onChange={(e) => update(l.id, { vatRate: Number(e.target.value) as VatRate })} className="h-10 rounded-[11px] border border-line-strong bg-surface px-2.5 outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100" aria-label="Btw">
+                    <select value={l.vatRate} onChange={(e) => update(l.id, { vatRate: Number(e.target.value) as VatRate })} className="h-10 rounded-[11px] border border-line-strong bg-surface px-2.5 outline-none focus:border-ink focus:ring-4 focus:ring-brand-100" aria-label="Btw">
                       <option value={21}>21%</option><option value={9}>9%</option><option value={0}>0%</option>
                     </select>
                   ) : <span className="hidden @3xl:block" />}

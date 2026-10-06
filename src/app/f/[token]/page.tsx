@@ -40,7 +40,7 @@ function PublicInvoice() {
     return (
       <div className="pt-16 text-center">
         <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-surface text-muted shadow-raised ring-1 ring-line"><FileX className="size-6" /></div>
-        <h1 className="mt-5 font-display text-[22px] font-bold">Deze factuur kunnen we niet vinden</h1>
+        <h1 className="mt-5 font-display text-[22px] font-semibold">Deze factuur kunnen we niet vinden</h1>
         <p className="mt-2 text-[14.5px] text-muted">Controleer de link in je e-mail, of neem contact op met de afzender.</p>
         <p className="mt-6 text-[12.5px] text-faint">In deze demo werken factuurlinks in dezelfde browser als waarin de factuur is gemaakt.</p>
       </div>
@@ -72,7 +72,7 @@ function PublicInvoice() {
         <div className="h-1.5" style={{ background: org.accentColor }} />
         <div className="p-6 text-center sm:p-10">
           <div className="text-[14px] text-muted">{inv.kind === 'credit' ? 'Creditfactuur' : 'Factuur'} {inv.number}</div>
-          <div className="tabular mt-2 font-display text-[44px] font-bold leading-none tracking-[-0.04em] sm:text-[52px]">{formatEUR(paid ? total : due)}</div>
+          <div className="tabular mt-2 font-display text-[44px] font-semibold leading-none tracking-[-0.04em] sm:text-[52px]">{formatEUR(paid ? total : due)}</div>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[13.5px] text-muted">
             {paid ? <Badge tone="success" dot>Betaald</Badge> : status === 'overdue' ? <Badge tone="danger" dot>Verlopen</Badge> : status === 'partial' ? <Badge tone="warning" dot>Deels betaald</Badge> : <Badge tone="info" dot>Openstaand</Badge>}
             {!paid && <span className="flex items-center gap-1"><CalendarClock className="size-3.5" /> Vervaldatum {formatDateLong(inv.dueDate)}</span>}

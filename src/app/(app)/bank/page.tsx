@@ -69,10 +69,10 @@ export default function BankPage() {
 
       {accounts.length > 1 && (
         <div className="mb-5 flex gap-3 overflow-x-auto pb-1 scrollbar-none">
-          {[{ id: 'all', name: 'Alle rekeningen', balance: accounts.reduce((s, a) => s + a.balance, 0), iban: `${accounts.length} rekeningen`, color: '#5b4bf5' }, ...accounts].map((a) => (
-            <button key={a.id} onClick={() => setAccount(a.id)} className={cn('min-w-[200px] rounded-[16px] border bg-surface p-4 text-left shadow-card transition', account === a.id ? 'border-brand-300 ring-4 ring-brand-100' : 'border-line hover:border-line-strong')}>
+          {[{ id: 'all', name: 'Alle rekeningen', balance: accounts.reduce((s, a) => s + a.balance, 0), iban: `${accounts.length} rekeningen`, color: '#171717' }, ...accounts].map((a) => (
+            <button key={a.id} onClick={() => setAccount(a.id)} className={cn('min-w-[200px] rounded-[24px] border bg-surface p-5 text-left shadow-card transition', account === a.id ? 'border-ink ring-1 ring-ink' : 'border-line hover:bg-subtle')}>
               <div className="flex items-center gap-2 text-[12.5px] text-muted"><span className="size-2 rounded-full" style={{ background: a.color }} />{a.name}</div>
-              <div className="tabular mt-1 font-display text-[19px] font-bold">{formatEUR(a.balance)}</div>
+              <div className="tabular mt-1 font-display text-[19px] font-semibold">{formatEUR(a.balance)}</div>
               <div className="truncate text-[11.5px] text-faint">{a.iban}</div>
             </button>
           ))}
@@ -83,7 +83,7 @@ export default function BankPage() {
         {suggestions.length > 0 && (
           <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, height: 0 }} className="mb-6">
             <div className="mb-3 flex items-center gap-2">
-              <Sparkles className="size-4 text-brand-600" />
+              <Sparkles className="size-4 text-ink" />
               <h2 className="font-display text-[16px] font-semibold">Brenqo heeft {pluralize(suggestions.length, 'match', 'matches')} gevonden</h2>
             </div>
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -134,9 +134,8 @@ function SuggestionCard({ tx }: { tx: BankTransaction }) {
   const reasons = inv ? scoreInvoiceMatch(tx, inv.inv, customers.get(inv.inv.customerId)).reasons : exp ? ['Bedrag komt exact overeen', `Afzender lijkt op ${exp.supplierName}`] : [];
 
   return (
-    <Card className="relative overflow-hidden border-brand-100">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(500px_160px_at_100%_0%,rgba(108,92,244,0.08),transparent)]" />
-      <div className="relative p-5">
+    <Card className="relative overflow-hidden">
+            <div className="relative p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="text-[12.5px] text-muted">{formatDateShort(tx.date)} · {tx.counterparty}</div>
@@ -144,10 +143,10 @@ function SuggestionCard({ tx }: { tx: BankTransaction }) {
               {inv ? <>Factuur {inv.inv.number} lijkt betaald.</> : exp ? <>Dit is waarschijnlijk de {exp.kind === 'receipt' ? 'bon' : 'factuur'} van {exp.supplierName}.</> : 'Mogelijke match'}
             </div>
           </div>
-          <Amount value={tx.amount} sign colored className="font-display text-[19px] font-bold" />
+          <Amount value={tx.amount} sign colored className="font-display text-[19px] font-semibold" />
         </div>
-        <div className="mt-3 flex items-center gap-3 rounded-[14px] bg-surface p-3 ring-1 ring-line">
-          <div className="grid size-9 place-items-center rounded-[11px] bg-brand-50 text-brand-600">{inv ? <FileText className="size-4" /> : <Receipt className="size-4" />}</div>
+        <div className="mt-3 flex items-center gap-3 rounded-[18px] bg-canvas p-3">
+          <div className="grid size-9 place-items-center rounded-full bg-surface text-ink">{inv ? <FileText className="size-4" /> : <Receipt className="size-4" />}</div>
           <div className="min-w-0 flex-1">
             <div className="truncate text-[13.5px] font-medium">{inv ? `${inv.inv.number} · ${inv.customer?.companyName}` : exp ? `${exp.supplierName} · ${exp.category}` : ''}</div>
             <div className="text-[12px] text-muted">{inv ? `Nog open ${formatEUR(inv.due)}` : exp ? formatEUR(exp.total) : ''}</div>
@@ -156,7 +155,7 @@ function SuggestionCard({ tx }: { tx: BankTransaction }) {
         </div>
         {reasons.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-muted">
-            {reasons.map((r) => <li key={r} className="flex items-center gap-1"><Check className="size-3 text-success-600" />{r}</li>)}
+            {reasons.map((r) => <li key={r} className="flex items-center gap-1"><Check className="size-3 text-ink" />{r}</li>)}
           </ul>
         )}
         <div className="mt-4 flex gap-2">
@@ -193,7 +192,7 @@ function TxRow({ tx, highlight }: { tx: BankTransaction; highlight: boolean }) {
 
   return (
     <li id={`tx-${tx.id}`} className={cn('flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line/70 px-5 py-3.5 transition last:border-0 sm:flex-nowrap', highlight && 'bg-brand-50/60')}>
-      <div className={cn('grid size-9 shrink-0 place-items-center rounded-[11px]', incoming ? 'bg-success-50 text-success-600' : 'bg-subtle text-muted ring-1 ring-line')}>
+      <div className={cn('grid size-9 shrink-0 place-items-center rounded-full', incoming ? 'bg-ink-2 text-[#fafafa]' : 'bg-canvas text-ink')}>
         {incoming ? <ArrowDownRight className="size-4" /> : <ArrowUpRight className="size-4" />}
       </div>
       <div className="min-w-0 flex-1">

@@ -100,7 +100,7 @@ export function ExpensesView({ kind }: { kind: 'receipt' | 'invoice' }) {
 
       {!isReceipt && (
         <Card className="mb-5 flex flex-col gap-4 overflow-hidden p-5 sm:flex-row sm:items-center">
-          <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-brand"><Inbox className="size-6" /></div>
+          <div className="grid size-12 shrink-0 place-items-center rounded-full bg-ink text-[#fafafa]"><Inbox className="size-5" /></div>
           <div className="min-w-0 flex-1">
             <div className="text-[15px] font-semibold">Jouw inbox-adres voor inkoopfacturen</div>
             <div className="mt-0.5 text-[13.5px] text-muted">Stuur of forward facturen naar dit adres. Wij pakken de PDF, lezen hem uit en zetten hem hier klaar.</div>
@@ -211,13 +211,13 @@ function ReviewCard({ expense: e, onEdit, memory }: { expense: Expense; onEdit: 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="truncate text-[15px] font-semibold">{e.supplierName}</div>
-            <div className="tabular font-display text-[17px] font-bold">{formatEUR(e.total)}</div>
+            <div className="tabular font-display text-[17px] font-semibold">{formatEUR(e.total)}</div>
           </div>
           <div className="text-[12.5px] text-muted">{formatDateLong(e.date)} · {formatEUR(e.vatAmount)} btw</div>
           <div className="mt-2 flex items-center gap-1.5 text-[12.5px] font-medium text-ink-2"><CategoryIcon name={e.category} className="size-3.5 text-brand-600" />{e.category}</div>
         </div>
       </div>
-      {memory && <div className="flex items-center gap-1.5 border-t border-line bg-brand-50/50 px-4 py-2 text-[12px] text-brand-800"><Brain className="size-3.5" /> Herkend op basis van eerdere keuzes</div>}
+      {memory && <div className="flex items-center gap-1.5 border-t border-line bg-subtle px-4 py-2 text-[12px] text-ink"><Brain className="size-3.5" /> Herkend op basis van eerdere keuzes</div>}
       <div className="flex gap-2 border-t border-line p-3">
         <Button size="sm" variant="success" className="flex-1" onClick={() => { saveExpense({ ...e, status: 'processed' }); toast.success(`${e.kind === 'receipt' ? 'Bon' : 'Factuur'} van ${e.supplierName} verwerkt`); }}><Check /> Klopt</Button>
         <Button size="sm" variant="outline" className="flex-1" onClick={onEdit}><Pencil /> Aanpassen</Button>
@@ -277,7 +277,7 @@ function ExpenseDrawer({ id, onClose }: { id: string | null; onClose: () => void
         )}
         {expense.kind === 'invoice' && <Field label="IBAN leverancier" optional><Input value={form.iban} onChange={(e) => set({ iban: e.target.value })} /></Field>}
         <Field label="Omschrijving" optional><Input value={form.description} onChange={(e) => set({ description: e.target.value })} /></Field>
-        <div className={cn('flex items-center gap-3 rounded-2xl p-4 text-[13px] ring-1', tx ? 'bg-success-50/60 text-success-700 ring-success-100' : 'bg-subtle text-muted ring-line')}>
+        <div className={cn('flex items-center gap-3 rounded-[18px] p-4 text-[13px]', tx ? 'bg-canvas text-ink' : 'bg-canvas text-muted')}>
           <Link2 className="size-4 shrink-0" />
           {tx ? <>Gekoppeld aan betaling van {formatEUR(-tx.amount)} op {formatDate(tx.date)}</> : 'Nog niet gekoppeld aan een banktransactie. Dat gebeurt automatisch zodra de betaling binnenkomt.'}
         </div>

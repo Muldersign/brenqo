@@ -31,9 +31,9 @@ export default function QuotesPage() {
       <PageHeader title="Offertes" description="Verstuur een offerte; je klant accepteert online en jij zet hem met één klik om naar een factuur." actions={<Button asChild><Link href="/offertes/nieuw"><Plus strokeWidth={2.5} /> Nieuwe offerte</Link></Button>} />
       {rows.length > 0 && (
         <div className="mb-5 grid grid-cols-3 gap-3">
-          <Card className="p-4"><div className="text-[13px] text-muted">Wacht op reactie</div><div className="tabular mt-1 font-display text-[20px] font-bold sm:text-[22px]">{formatEUR(pipeline, { round: true })}</div></Card>
-          <Card className="p-4"><div className="text-[13px] text-muted">Geaccepteerd</div><div className="mt-1 font-display text-[20px] font-bold sm:text-[22px]">{accepted.length}</div></Card>
-          <Card className="p-4"><div className="text-[13px] text-muted">Slagingskans</div><div className="mt-1 font-display text-[20px] font-bold sm:text-[22px]">{decided ? Math.round((accepted.length / decided) * 100) : 0}%</div></Card>
+          <Card className="p-4"><div className="text-[13px] text-muted">Wacht op reactie</div><div className="tabular mt-1 font-display text-[20px] font-semibold sm:text-[22px]">{formatEUR(pipeline, { round: true })}</div></Card>
+          <Card className="p-4"><div className="text-[13px] text-muted">Geaccepteerd</div><div className="mt-1 font-display text-[20px] font-semibold sm:text-[22px]">{accepted.length}</div></Card>
+          <Card className="p-4"><div className="text-[13px] text-muted">Slagingskans</div><div className="mt-1 font-display text-[20px] font-semibold sm:text-[22px]">{decided ? Math.round((accepted.length / decided) * 100) : 0}%</div></Card>
         </div>
       )}
       <Card className="overflow-hidden">

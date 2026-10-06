@@ -1,60 +1,63 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Manrope Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  /* "Clinical blueprint on frosted paper": achromatic surfaces, Geist, pill controls, red only for errors. */
+  --font-sans: 'Geist Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Geist Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: #f6f6f8;
+  --color-canvas: #f5f5f5;
   --color-surface: #ffffff;
-  --color-subtle: #fafafb;
-  --color-line: #ececf1;
-  --color-line-strong: #dedee6;
-  --color-ink: #17171c;
-  --color-ink-2: #45454f;
-  --color-muted: #84848f;
-  --color-faint: #b4b4bd;
+  --color-subtle: #fafafa;
+  --color-line: #e5e5e5;
+  --color-line-strong: #e5e5e5;
+  --color-ink: #0a0a0a;
+  --color-ink-2: #171717;
+  --color-muted: #737373;
+  --color-faint: #a3a3a3;
 
-  --color-brand-50: #f3f2ff;
-  --color-brand-100: #e8e6ff;
-  --color-brand-200: #d3cffe;
-  --color-brand-300: #b2aafc;
-  --color-brand-400: #8c7ff8;
-  --color-brand-500: #6c5cf4;
-  --color-brand-600: #5b4bf5;
-  --color-brand-700: #4936d6;
-  --color-brand-800: #3b2dab;
-  --color-brand-900: #2c2380;
+  /* The former accent scale is now the neutral scale: emphasis comes from ink, not hue. */
+  --color-brand-50: #fafafa;
+  --color-brand-100: #f5f5f5;
+  --color-brand-200: #e5e5e5;
+  --color-brand-300: #d4d4d4;
+  --color-brand-400: #a3a3a3;
+  --color-brand-500: #404040;
+  --color-brand-600: #171717;
+  --color-brand-700: #0a0a0a;
+  --color-brand-800: #000000;
+  --color-brand-900: #000000;
 
-  --color-success-50: #ebf9f1;
-  --color-success-100: #d3f2e1;
-  --color-success-500: #16a35a;
-  --color-success-600: #0f8a4b;
-  --color-success-700: #0b6d3b;
+  --color-success-50: #f5f5f5;
+  --color-success-100: #e5e5e5;
+  --color-success-500: #171717;
+  --color-success-600: #171717;
+  --color-success-700: #0a0a0a;
 
-  --color-warning-50: #fff6e8;
-  --color-warning-100: #ffe9c7;
-  --color-warning-500: #f08c00;
-  --color-warning-600: #d97706;
-  --color-warning-700: #a85a04;
+  --color-warning-50: #f5f5f5;
+  --color-warning-100: #e5e5e5;
+  --color-warning-500: #737373;
+  --color-warning-600: #525252;
+  --color-warning-700: #404040;
 
-  --color-danger-50: #fef0f0;
-  --color-danger-100: #fddcdc;
-  --color-danger-500: #e5484d;
-  --color-danger-600: #d1333a;
-  --color-danger-700: #a8262c;
+  --color-info-50: #f5f5f5;
+  --color-info-100: #e5e5e5;
+  --color-info-500: #737373;
+  --color-info-700: #404040;
 
-  --color-info-50: #eef5ff;
-  --color-info-100: #d9e8ff;
-  --color-info-500: #3b82f6;
-  --color-info-700: #1d58c4;
+  /* Ember: errors and overdue only. */
+  --color-danger-50: #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-500: #e7000b;
+  --color-danger-600: #e7000b;
+  --color-danger-700: #c10007;
 
-  --radius-card: 18px;
-  --radius-btn: 12px;
+  --radius-card: 24px;
+  --radius-btn: 18px;
 
-  --shadow-card: 0 1px 2px rgba(23, 23, 28, 0.04), 0 1px 1px rgba(23, 23, 28, 0.02);
-  --shadow-raised: 0 1px 2px rgba(23, 23, 28, 0.05), 0 8px 24px -8px rgba(23, 23, 28, 0.08);
-  --shadow-pop: 0 2px 4px rgba(23, 23, 28, 0.04), 0 16px 48px -12px rgba(23, 23, 28, 0.22);
-  --shadow-brand: 0 1px 2px rgba(59, 45, 171, 0.25), 0 8px 20px -6px rgba(91, 75, 245, 0.45);
+  --shadow-card: 0 0 0 1px rgba(23, 23, 23, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-raised: 0 0 0 1px rgba(23, 23, 23, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-pop: 0 0 0 1px rgba(23, 23, 23, 0.05), 0 16px 40px -12px rgba(0, 0, 0, 0.2), 0 4px 8px -4px rgba(0, 0, 0, 0.08);
+  --shadow-brand: none;
 
   --animate-fade-in: fade-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   --animate-shimmer: shimmer 1.6s linear infinite;
@@ -92,12 +95,14 @@
   }
   body {
     @apply bg-canvas text-ink font-sans;
-    font-feature-settings: 'cv11', 'ss01', 'ss03';
+    font-size: 14px;
+    line-height: 1.43;
+    font-feature-settings: 'ss01', 'cv11';
     overscroll-behavior-y: none;
     overflow-x: clip;
   }
   ::selection {
-    background: var(--color-brand-200);
+    background: #e5e5e5;
   }
   button:not(:disabled),
   [role='button']:not(:disabled) {
@@ -112,7 +117,7 @@
     input, textarea, select { font-size: 14px; }
   }
   :focus-visible {
-    outline: 2px solid var(--color-brand-500);
+    outline: 2px solid #0a0a0a;
     outline-offset: 2px;
     border-radius: 6px;
   }
@@ -125,7 +130,13 @@
 
 @utility font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+/* Large numbers and page titles: tight, engineered tracking. */
+@utility tracking-display {
+  letter-spacing: -0.05em;
 }
 
 @utility pb-safe {
@@ -141,16 +152,14 @@
 }
 
 @utility skeleton {
-  background: linear-gradient(90deg, #efeff3 0px, #f7f7fa 120px, #efeff3 240px);
+  background: linear-gradient(90deg, #ededed 0px, #f7f7f7 120px, #ededed 240px);
   background-size: 800px 100%;
   animation: var(--animate-shimmer);
   border-radius: 8px;
 }
 
 @utility hero-gradient {
-  background:
-    radial-gradient(1200px 300px at 0% 0%, rgba(108, 92, 244, 0.10), transparent 60%),
-    radial-gradient(800px 260px at 100% 0%, rgba(22, 163, 90, 0.06), transparent 60%);
+  background: none;
 }
 
 @media print {

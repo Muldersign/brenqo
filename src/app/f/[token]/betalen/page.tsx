@@ -56,7 +56,7 @@ function Checkout() {
             <div className="text-[13px] text-muted">{org.name}</div>
             <div className="font-display text-[15px] font-semibold">Factuur {inv.number}</div>
           </div>
-          <div className="tabular font-display text-[24px] font-bold">{formatEUR(due)}</div>
+          <div className="tabular font-display text-[24px] font-semibold">{formatEUR(due)}</div>
         </div>
         <div className="p-6">
           {step === 'method' && (
@@ -64,8 +64,8 @@ function Checkout() {
               <div className="mb-3 text-[13px] font-semibold text-ink-2">Kies je betaalmethode</div>
               <div className="space-y-2">
                 {([['ideal', 'iDEAL', org.payments.methods.ideal], ['bancontact', 'Bancontact', org.payments.methods.bancontact], ['creditcard', 'Creditcard', org.payments.methods.creditcard]] as const).filter(([, , on]) => on).map(([k, label]) => (
-                  <button key={k} onClick={() => { setMethod(k); setBank(null); }} className={cn('flex w-full items-center gap-3 rounded-2xl p-4 text-left ring-1 transition', method === k ? 'bg-brand-50/60 ring-2 ring-brand-400' : 'ring-line hover:bg-subtle')}>
-                    <span className="grid h-8 w-12 place-items-center rounded-lg bg-surface text-[11px] font-bold ring-1 ring-line">{label === 'iDEAL' ? 'iD' : label.slice(0, 2)}</span>
+                  <button key={k} onClick={() => { setMethod(k); setBank(null); }} className={cn('flex w-full items-center gap-3 rounded-2xl p-4 text-left ring-1 transition', method === k ? 'bg-brand-50/60 ring-1 ring-ink' : 'ring-line hover:bg-subtle')}>
+                    <span className="grid h-8 w-12 place-items-center rounded-lg bg-surface text-[11px] font-semibold ring-1 ring-line">{label === 'iDEAL' ? 'iD' : label.slice(0, 2)}</span>
                     <span className="flex-1 font-medium">{label}</span>
                     {method === k && <Check className="size-4 text-brand-600" />}
                   </button>
@@ -75,7 +75,7 @@ function Checkout() {
                 <div className="mt-5">
                   <div className="mb-2 text-[13px] font-semibold text-ink-2">Kies je bank</div>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {BANKS.map((b) => <button key={b} onClick={() => setBank(b)} className={cn('flex items-center justify-between rounded-xl px-3 py-2.5 text-[13.5px] ring-1 transition', bank === b ? 'bg-brand-50/60 font-medium ring-2 ring-brand-400' : 'ring-line hover:bg-subtle')}>{b}<ChevronRight className="size-3.5 text-faint" /></button>)}
+                    {BANKS.map((b) => <button key={b} onClick={() => setBank(b)} className={cn('flex items-center justify-between rounded-xl px-3 py-2.5 text-[13.5px] ring-1 transition', bank === b ? 'bg-brand-50/60 font-medium ring-1 ring-ink' : 'ring-line hover:bg-subtle')}>{b}<ChevronRight className="size-3.5 text-faint" /></button>)}
                   </div>
                 </div>
               )}

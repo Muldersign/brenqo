@@ -44,7 +44,7 @@ export default function QuoteDetailPage() {
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild><Link href="/offertes" aria-label="Terug"><ArrowLeft className="!size-5" /></Link></Button>
           <div>
-            <div className="flex items-center gap-2.5"><h1 className="font-display text-[24px] font-bold sm:text-[28px]">Offerte {quote.number}</h1><QuoteStatusBadge status={status} /></div>
+            <div className="flex items-center gap-2.5"><h1 className="font-display text-[24px] font-semibold sm:text-[28px]">Offerte {quote.number}</h1><QuoteStatusBadge status={status} /></div>
             <div className="text-[14px] text-muted">{customer?.companyName} · {formatEUR(total)}</div>
           </div>
         </div>

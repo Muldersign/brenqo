@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import '@fontsource-variable/inter';
-import '@fontsource-variable/manrope';
+import '@fontsource-variable/geist';
 import './globals.css';
 import { Toaster } from 'sonner';
 import { ServiceWorker } from '@/components/pwa/service-worker';
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#f6f6f8',
+  themeColor: '#f5f5f5',
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',

@@ -21,14 +21,14 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-line bg-[#fbfbfc] transition-[width] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:flex',
+        'sticky top-0 hidden h-dvh shrink-0 flex-col bg-subtle transition-[width] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:flex',
         collapsed ? 'w-[76px]' : 'w-[264px]',
       )}
     >
       <div className={cn('flex items-center gap-2 px-4 pb-3 pt-5', collapsed && 'flex-col px-2')}>
         <Link href="/" className={cn('flex items-center gap-2', collapsed && 'mb-1')}>
           <BrandMark />
-          {!collapsed && <span className="font-display text-[19px] font-bold tracking-[-0.03em]">brenqo</span>}
+          {!collapsed && <span className="text-[18px] font-semibold tracking-[-0.04em]">brenqo</span>}
         </Link>
         <button
           onClick={toggle}
@@ -40,7 +40,7 @@ export function Sidebar() {
       </div>
 
       <div className={cn('px-3', collapsed && 'px-2')}>
-        <div className="rounded-[16px] border border-line bg-surface shadow-card">
+        <div className="rounded-[18px] bg-surface shadow-card">
           <OrgSwitcher collapsed={collapsed} />
         </div>
       </div>
@@ -49,7 +49,7 @@ export function Sidebar() {
         {NAV.map((group, gi) => (
           <div key={gi}>
             {group.label && !collapsed && (
-              <div className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-faint">{group.label}</div>
+              <div className="mb-1.5 px-3 text-[12px] font-medium uppercase tracking-[0.05em] text-muted">{group.label}</div>
             )}
             {group.label && collapsed && <div className="mx-auto mb-2 h-px w-6 bg-line" />}
             <ul className="space-y-0.5">
@@ -60,20 +60,19 @@ export function Sidebar() {
                   <Link
                     href={item.href}
                     className={cn(
-                      'group relative flex h-9 items-center gap-3 rounded-[11px] px-3 text-[14px] font-medium transition-all',
-                      active ? 'bg-surface text-ink shadow-[0_1px_2px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)]' : 'text-ink-2/80 hover:bg-black/[0.035] hover:text-ink',
+                      'group relative flex h-9 items-center gap-3 rounded-full px-3 text-[14px] font-medium transition-colors',
+                      active ? 'bg-surface text-ink shadow-card' : 'text-ink-2/75 hover:bg-[#f0f0f0] hover:text-ink',
                       collapsed && 'justify-center px-0',
                     )}
                   >
-                    {active && <span className="absolute -left-3 top-1/2 h-4 w-1 -translate-y-1/2 rounded-r-full bg-brand-600" />}
-                    <item.icon className={cn('size-[18px] shrink-0 transition', active ? 'text-brand-600' : 'text-muted group-hover:text-ink-2')} />
+                                        <item.icon className={cn('size-[17px] shrink-0 transition', active ? 'text-ink' : 'text-muted group-hover:text-ink')} />
                     {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
                     {count > 0 && !collapsed && (
-                      <span className={cn('tabular min-w-5 rounded-full px-1.5 text-center text-[11px] font-semibold leading-5', item.badgeKey === 'overdue' ? 'bg-danger-50 text-danger-600' : 'bg-warning-50 text-warning-700')}>
+                      <span className={cn('tabular min-w-5 rounded-full px-1.5 text-center text-[11px] font-medium leading-5', item.badgeKey === 'overdue' ? 'bg-danger-50 text-danger-600' : 'bg-canvas text-ink')}>
                         {count}
                       </span>
                     )}
-                    {count > 0 && collapsed && <span className={cn('absolute right-2 top-1.5 size-2 rounded-full ring-2 ring-[#fbfbfc]', item.badgeKey === 'overdue' ? 'bg-danger-500' : 'bg-warning-500')} />}
+                    {count > 0 && collapsed && <span className={cn('absolute right-2 top-1.5 size-2 rounded-full ring-2 ring-subtle', item.badgeKey === 'overdue' ? 'bg-danger-500' : 'bg-ink')} />}
                   </Link>
                 );
                 return <li key={item.href}>{collapsed ? <Tooltip content={item.label} side="right">{link}</Tooltip> : link}</li>;
@@ -84,11 +83,11 @@ export function Sidebar() {
       </nav>
 
       {!collapsed && (
-        <div className="mx-3 mb-3 rounded-[16px] border border-line bg-gradient-to-br from-brand-50 via-surface to-surface p-3.5">
-          <div className="flex items-center gap-2 text-[12.5px] font-semibold text-brand-700">
+        <div className="mx-3 mb-3 hidden rounded-[18px] border border-line bg-surface p-4 [@media(min-height:1000px)]:block">
+          <div className="flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.05em] text-muted">
             <Sparkles className="size-3.5" /> Tip
           </div>
-          <p className="mt-1 text-[12.5px] leading-relaxed text-ink-2">
+          <p className="mt-1.5 text-[13px] leading-[1.5] text-ink">
             Installeer Brenqo op je telefoon en scan bonnetjes direct met je camera.
           </p>
         </div>
@@ -110,15 +109,9 @@ export function Sidebar() {
 export function BrandMark({ size = 30 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden>
-      <defs>
-        <linearGradient id="bq-g" x1="0" y1="0" x2="32" y2="32">
-          <stop offset="0" stopColor="#8c7ff8" />
-          <stop offset="1" stopColor="#4936d6" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="9" fill="url(#bq-g)" />
-      <path d="M11 8.5h6.2c3 0 4.9 1.6 4.9 4 0 1.6-.9 2.8-2.2 3.3 1.8.4 3 1.8 3 3.7 0 2.7-2.1 4.5-5.4 4.5H11V8.5Z" fill="#fff" fillOpacity=".95" />
-      <circle cx="16.4" cy="19.4" r="2.1" fill="#4936d6" />
+      <rect width="32" height="32" rx="10" fill="#0a0a0a" />
+      <path d="M11 8.5h6.2c3 0 4.9 1.6 4.9 4 0 1.6-.9 2.8-2.2 3.3 1.8.4 3 1.8 3 3.7 0 2.7-2.1 4.5-5.4 4.5H11V8.5Z" fill="#fafafa" />
+      <circle cx="16.4" cy="19.4" r="2.1" fill="#0a0a0a" />
     </svg>
   );
 }

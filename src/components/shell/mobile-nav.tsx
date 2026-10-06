@@ -23,7 +23,7 @@ export function MobileNav() {
     const active = isActive(pathname, href);
     return (
       <Link href={href} className="relative flex flex-1 flex-col items-center gap-1 pt-2.5 text-[10.5px] font-medium">
-        <Icon className={cn('size-[22px] transition', active ? 'text-brand-600' : 'text-muted')} />
+        <Icon className={cn('size-[22px] transition', active ? 'text-ink' : 'text-muted')} />
         <span className={active ? 'text-ink' : 'text-muted'}>{label}</span>
         {badge > 0 && <span className="absolute right-[calc(50%-18px)] top-1.5 size-2 rounded-full bg-danger-500 ring-2 ring-white" />}
       </Link>
@@ -33,9 +33,9 @@ export function MobileNav() {
   const action = (icon: React.ReactNode, title: string, sub: string, onClick: () => void, primary = false) => (
     <button
       onClick={() => { setActions(false); onClick(); }}
-      className={cn('flex w-full items-center gap-4 rounded-[18px] p-4 text-left transition active:scale-[0.99]', primary ? 'bg-brand-600 text-white shadow-brand' : 'bg-subtle ring-1 ring-line')}
+      className={cn('flex w-full items-center gap-4 rounded-[24px] p-4 text-left transition active:scale-[0.99]', primary ? 'bg-ink text-[#fafafa]' : 'bg-canvas')}
     >
-      <div className={cn('grid size-11 place-items-center rounded-[14px] [&_svg]:size-[22px]', primary ? 'bg-white/15' : 'bg-surface text-brand-600 ring-1 ring-line')}>{icon}</div>
+      <div className={cn('grid size-11 place-items-center rounded-full [&_svg]:size-[20px]', primary ? 'bg-white/10' : 'bg-surface text-ink')}>{icon}</div>
       <div>
         <div className="text-[15px] font-semibold">{title}</div>
         <div className={cn('text-[12.5px]', primary ? 'text-white/75' : 'text-muted')}>{sub}</div>
@@ -52,7 +52,7 @@ export function MobileNav() {
           <div className="flex flex-1 items-start justify-center">
             <button
               onClick={() => setActions(true)}
-              className="-mt-5 grid size-[58px] place-items-center rounded-[20px] bg-brand-600 text-white shadow-brand ring-4 ring-canvas transition active:scale-95"
+              className="-mt-5 grid size-[56px] place-items-center rounded-full bg-ink text-[#fafafa] shadow-pop ring-4 ring-canvas transition active:scale-95"
               aria-label="Nieuw"
             >
               <Plus className="size-7" strokeWidth={2.4} />
@@ -83,7 +83,7 @@ export function MobileNav() {
                   [<Upload key="c" />, 'Bon uploaden', () => openScan('receipt')],
                   [<UserPlus key="d" />, 'Klant', () => setUI({ customerDrawer: { open: true } })],
                 ].map(([icon, label, fn], i) => (
-                  <button key={i} onClick={() => { setActions(false); (fn as () => void)(); }} className="flex items-center gap-3 rounded-[16px] bg-subtle p-3.5 text-left text-[14px] font-medium ring-1 ring-line active:scale-[0.99] [&_svg]:size-5 [&_svg]:text-brand-600">
+                  <button key={i} onClick={() => { setActions(false); (fn as () => void)(); }} className="flex items-center gap-3 rounded-[18px] bg-canvas p-3.5 text-left text-[14px] font-medium active:scale-[0.99] [&_svg]:size-5 [&_svg]:text-ink">
                     {icon as React.ReactNode}{label as string}
                   </button>
                 ))}
@@ -105,7 +105,7 @@ export function MobileNav() {
                 <div className="px-2 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-faint">{g.label}</div>
                 <div className="grid grid-cols-3 gap-2">
                   {g.items.map((it) => (
-                    <Link key={it.href} href={it.href} onClick={() => setMore(false)} className={cn('flex flex-col items-center gap-1.5 rounded-[16px] p-3 text-center text-[12.5px] font-medium ring-1 ring-line', isActive(pathname, it.href) ? 'bg-brand-50 text-brand-700 ring-brand-100' : 'bg-subtle text-ink-2')}>
+                    <Link key={it.href} href={it.href} onClick={() => setMore(false)} className={cn('flex flex-col items-center gap-1.5 rounded-[18px] p-3 text-center text-[12.5px] font-medium', isActive(pathname, it.href) ? 'bg-ink text-[#fafafa]' : 'bg-canvas text-ink')}>
                       <it.icon className="size-5" />
                       {it.label}
                     </Link>
@@ -113,7 +113,7 @@ export function MobileNav() {
                 </div>
               </div>
             ))}
-            <Link href="/instellingen" onClick={() => setMore(false)} className="mt-1 flex items-center justify-center rounded-[16px] bg-subtle p-3.5 text-[14px] font-medium ring-1 ring-line">Instellingen</Link>
+            <Link href="/instellingen" onClick={() => setMore(false)} className="mt-1 flex items-center justify-center rounded-full bg-canvas p-3 text-[14px] font-medium">Instellingen</Link>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

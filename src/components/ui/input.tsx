@@ -2,7 +2,7 @@ import { forwardRef, useId } from 'react';
 import { cn } from '@/lib/utils';
 
 const base =
-  'w-full rounded-[12px] border border-line-strong bg-surface px-3.5 text-ink placeholder:text-faint shadow-[0_1px_1px_rgba(0,0,0,0.02)] transition outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100 disabled:bg-subtle disabled:text-muted';
+  'w-full rounded-[18px] border border-transparent bg-canvas px-3.5 text-ink placeholder:text-muted transition outline-none focus:border-line focus:bg-surface disabled:text-muted';
 
 export const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement> & { prefix?: string; suffix?: string }>(
   function Input({ className, prefix, suffix, ...props }, ref) {
@@ -10,12 +10,12 @@ export const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTML
       return (
         <div className={cn('relative flex items-center', className)}>
           {prefix && <span className="pointer-events-none absolute left-3.5 text-muted">{prefix}</span>}
-          <input ref={ref} className={cn(base, 'h-10', prefix && 'pl-8', suffix && 'pr-12')} {...props} />
+          <input ref={ref} className={cn(base, 'h-9', prefix && 'pl-8', suffix && 'pr-12')} {...props} />
           {suffix && <span className="pointer-events-none absolute right-3.5 text-[13px] text-muted">{suffix}</span>}
         </div>
       );
     }
-    return <input ref={ref} className={cn(base, 'h-10', className)} {...props} />;
+    return <input ref={ref} className={cn(base, 'h-9', className)} {...props} />;
   },
 );
 
@@ -26,7 +26,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttrib
 export const Select = forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(function Select({ className, children, ...props }, ref) {
   return (
     <div className={cn('relative', className)}>
-      <select ref={ref} className={cn(base, 'h-10 appearance-none pr-9')} {...props}>
+      <select ref={ref} className={cn(base, 'h-9 appearance-none pr-9')} {...props}>
         {children}
       </select>
       <svg className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted" viewBox="0 0 16 16" fill="none">
@@ -41,7 +41,7 @@ export function Field({
 }: { label: string; hint?: React.ReactNode; children: React.ReactNode; className?: string; htmlFor?: string; optional?: boolean }) {
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
-      <label htmlFor={htmlFor} className="text-[13px] font-medium text-ink-2">
+      <label htmlFor={htmlFor} className="text-[13px] font-medium text-ink">
         {label} {optional && <span className="font-normal text-faint">(optioneel)</span>}
       </label>
       {children}

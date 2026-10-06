@@ -10,13 +10,13 @@ import type { NotificationKind } from '@/lib/types';
 import { useMemo } from 'react';
 
 const meta: Record<NotificationKind, { icon: React.ReactNode; cls: string }> = {
-  paid: { icon: <CircleCheck />, cls: 'bg-success-50 text-success-600' },
+  paid: { icon: <CircleCheck />, cls: 'bg-canvas text-ink' },
   overdue: { icon: <CircleAlert />, cls: 'bg-danger-50 text-danger-600' },
-  expense: { icon: <FileInput />, cls: 'bg-brand-50 text-brand-600' },
-  receipt: { icon: <Receipt />, cls: 'bg-warning-50 text-warning-600' },
-  bank: { icon: <ArrowLeftRight />, cls: 'bg-info-50 text-info-700' },
-  quote: { icon: <FilePenLine />, cls: 'bg-brand-50 text-brand-600' },
-  recurring: { icon: <Repeat />, cls: 'bg-brand-50 text-brand-600' },
+  expense: { icon: <FileInput />, cls: 'bg-canvas text-ink' },
+  receipt: { icon: <Receipt />, cls: 'bg-canvas text-ink' },
+  bank: { icon: <ArrowLeftRight />, cls: 'bg-canvas text-ink' },
+  quote: { icon: <FilePenLine />, cls: 'bg-canvas text-ink' },
+  recurring: { icon: <Repeat />, cls: 'bg-canvas text-ink' },
   info: { icon: <Info />, cls: 'bg-subtle text-ink-2' },
 };
 
@@ -29,10 +29,10 @@ export function NotificationsButton() {
   return (
     <Popover.Root onOpenChange={(open) => { if (!open && unread) markRead(); }}>
       <Popover.Trigger asChild>
-        <button className="relative grid size-10 place-items-center rounded-[12px] text-ink-2 transition hover:bg-black/[0.04]" aria-label="Meldingen">
+        <button className="relative grid size-9 place-items-center rounded-full text-ink transition hover:bg-surface" aria-label="Meldingen">
           <Bell className="size-[19px]" />
           {unread > 0 && (
-            <span className="tabular absolute right-1.5 top-1.5 grid h-[17px] min-w-[17px] place-items-center rounded-full bg-danger-500 px-1 text-[10.5px] font-bold text-white ring-2 ring-canvas">
+            <span className="tabular absolute right-1.5 top-1.5 grid h-[17px] min-w-[17px] place-items-center rounded-full bg-danger-500 px-1 text-[10.5px] font-semibold text-white ring-2 ring-canvas">
               {unread}
             </span>
           )}
@@ -43,7 +43,7 @@ export function NotificationsButton() {
           align="end"
           sideOffset={8}
           collisionPadding={12}
-          className="z-50 w-[min(400px,calc(100vw-24px))] overflow-hidden rounded-[20px] border border-line bg-surface shadow-pop data-[state=open]:animate-[fade-in_0.18s_ease-out]"
+          className="z-50 w-[min(400px,calc(100vw-24px))] overflow-hidden rounded-[24px] border border-line bg-surface shadow-pop data-[state=open]:animate-[fade-in_0.18s_ease-out]"
         >
           <div className="flex items-center justify-between border-b border-line px-5 py-4">
             <div>
@@ -51,7 +51,7 @@ export function NotificationsButton() {
               <div className="text-[12.5px] text-muted">{unread ? `${unread} nieuw` : 'Je bent helemaal bij'}</div>
             </div>
             {unread > 0 && (
-              <button onClick={() => markRead()} className="text-[12.5px] font-medium text-brand-600 hover:text-brand-700">Alles gelezen</button>
+              <button onClick={() => markRead()} className="rounded-full bg-canvas px-3 py-1 text-[12.5px] font-medium text-ink hover:bg-[#ebebeb]">Alles gelezen</button>
             )}
           </div>
           <div className="max-h-[440px] overflow-y-auto p-2">
@@ -64,14 +64,14 @@ export function NotificationsButton() {
             {sorted.map((n) => {
               const m = meta[n.kind];
               const content = (
-                <div className={cn('flex gap-3 rounded-[14px] p-3 transition hover:bg-subtle', !n.read && 'bg-brand-50/40')}>
-                  <div className={cn('grid size-9 shrink-0 place-items-center rounded-[11px] [&_svg]:size-[17px]', m.cls)}>{m.icon}</div>
+                <div className={cn('flex gap-3 rounded-[18px] p-3 transition hover:bg-subtle', !n.read && 'bg-subtle')}>
+                  <div className={cn('grid size-9 shrink-0 place-items-center rounded-full [&_svg]:size-[16px]', m.cls)}>{m.icon}</div>
                   <div className="min-w-0 flex-1">
                     <div className="text-[13.5px] font-medium leading-snug text-ink">{n.title}</div>
                     {n.body && <div className="mt-0.5 text-[12.5px] leading-snug text-muted">{n.body}</div>}
                     <div className="mt-1 text-[11.5px] text-faint">{relativeTime(n.createdAt)}</div>
                   </div>
-                  {!n.read && <span className="mt-1.5 size-2 shrink-0 rounded-full bg-brand-500" />}
+                  {!n.read && <span className="mt-1.5 size-2 shrink-0 rounded-full bg-ink" />}
                 </div>
               );
               return n.href ? (

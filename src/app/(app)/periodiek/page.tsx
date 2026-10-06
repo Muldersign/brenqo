@@ -50,9 +50,9 @@ export default function RecurringPage() {
       />
       {items.length > 0 && (
         <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <Card className="p-4"><div className="text-[13px] text-muted">Actief</div><div className="mt-1 font-display text-[22px] font-bold">{active.length}</div></Card>
-          <Card className="p-4"><div className="text-[13px] text-muted">Terugkerende omzet per jaar</div><div className="tabular mt-1 font-display text-[22px] font-bold">{formatEUR(yearly, { round: true })}</div></Card>
-          <Card className="col-span-2 p-4 sm:col-span-1"><div className="text-[13px] text-muted">Per maand gemiddeld</div><div className="tabular mt-1 font-display text-[22px] font-bold">{formatEUR(yearly / 12, { round: true })}</div></Card>
+          <Card className="p-4"><div className="text-[13px] text-muted">Actief</div><div className="mt-1 font-display text-[22px] font-semibold">{active.length}</div></Card>
+          <Card className="p-4"><div className="text-[13px] text-muted">Terugkerende omzet per jaar</div><div className="tabular mt-1 font-display text-[22px] font-semibold">{formatEUR(yearly, { round: true })}</div></Card>
+          <Card className="col-span-2 p-4 sm:col-span-1"><div className="text-[13px] text-muted">Per maand gemiddeld</div><div className="tabular mt-1 font-display text-[22px] font-semibold">{formatEUR(yearly / 12, { round: true })}</div></Card>
         </div>
       )}
       {items.length === 0 ? (
@@ -83,7 +83,7 @@ export default function RecurringPage() {
                   </Menu>
                 </div>
                 <div className="mt-5 flex items-baseline gap-1.5">
-                  <span className="tabular font-display text-[28px] font-bold tracking-[-0.02em]">{formatEUR(t.total)}</span>
+                  <span className="tabular font-display text-[28px] font-semibold tracking-[-0.02em]">{formatEUR(t.total)}</span>
                   <span className="text-[13.5px] text-muted">{frequencyShort[r.frequency]}</span>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-1.5">

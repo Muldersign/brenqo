@@ -124,7 +124,7 @@ export function DocumentEditor({ mode, initial }: { mode: 'invoice' | 'quote'; i
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild><Link href={mode === 'invoice' ? '/facturen' : '/offertes'} aria-label="Terug"><ArrowLeft className="!size-5" /></Link></Button>
           <div>
-            <h1 className="font-display text-[22px] font-bold sm:text-[26px]">{form.id ? `${mode === 'invoice' ? 'Factuur' : 'Offerte'} bewerken` : `Nieuwe ${label}`}</h1>
+            <h1 className="font-display text-[22px] font-semibold sm:text-[26px]">{form.id ? `${mode === 'invoice' ? 'Factuur' : 'Offerte'} bewerken` : `Nieuwe ${label}`}</h1>
             <p className="text-[13px] text-muted">{mode === 'invoice' && !form.number ? `Krijgt nummer ${number} zodra je hem verstuurt` : number}</p>
           </div>
         </div>
@@ -188,7 +188,7 @@ export function DocumentEditor({ mode, initial }: { mode: 'invoice' | 'quote'; i
                 ))}
                 <div className="flex items-baseline justify-between border-t border-line pt-3">
                   <dt className="font-semibold">Totaal</dt>
-                  <dd className="tabular font-display text-[24px] font-bold tracking-[-0.02em]">{formatEUR(totals.total)}</dd>
+                  <dd className="tabular font-display text-[24px] font-semibold tracking-[-0.02em]">{formatEUR(totals.total)}</dd>
                 </div>
               </dl>
             </div>
@@ -217,7 +217,7 @@ export function DocumentEditor({ mode, initial }: { mode: 'invoice' | 'quote'; i
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
             <div className="text-[11.5px] text-muted">Totaal</div>
-            <div className="tabular font-display text-[18px] font-bold">{formatEUR(totals.total)}</div>
+            <div className="tabular font-display text-[18px] font-semibold">{formatEUR(totals.total)}</div>
           </div>
           <Button variant="outline" size="icon" onClick={saveDraft} aria-label="Opslaan als concept"><Save /></Button>
           <Button onClick={saveAndSend}><Send /> Versturen</Button>
