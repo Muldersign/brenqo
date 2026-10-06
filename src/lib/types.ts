@@ -139,6 +139,7 @@ export interface InvoicePayment {
   note: string;
   source: 'manual' | 'bank' | 'online';
   transactionId?: ID;
+  providerPaymentId?: string;
 }
 
 /**
@@ -221,7 +222,8 @@ export interface Expense {
   status: 'review' | 'processed';
   paid: boolean;
   source: 'camera' | 'upload' | 'email';
-  document: { fileName: string; mimeType: string; previewDataUrl?: string };
+  /** `storagePath`: original file in Supabase Storage (documents/<organizationId>/…). */
+  document: { fileName: string; mimeType: string; previewDataUrl?: string; storagePath?: string };
   transactionId?: ID;
   createdAt: ISODateTime;
 }
@@ -233,11 +235,15 @@ export interface BankAccount {
   name: string;
   iban: string;
   balance: number;
-  provider: 'demo' | 'psd2';
+  provider: 'demo' | 'psd2' | 'import';
+  /** Id at the PSD2 aggregator, for automatic syncing. */
+  providerAccountId?: string;
   connectedAt: ISODateTime;
   lastSyncAt: ISODateTime;
   consentValidUntil: ISODate;
   color: string;
+  /** Most recent transaction date imported, used to fetch only newer ones. */
+  lastImportDate?: ISODate;
 }
 
 export type TransactionStatus = 'todo' | 'suggested' | 'matched' | 'categorized' | 'ignored';
@@ -258,6 +264,8 @@ export interface BankTransaction {
   /** 0–100, how sure the matcher is about `invoiceId`/`expenseId`. */
   confidence?: number;
   autoMatched?: boolean;
+  /** Stable id from the bank or statement import; prevents duplicates. */
+  externalId?: string;
 }
 
 export type Frequency = 'monthly' | 'quarterly' | 'yearly';

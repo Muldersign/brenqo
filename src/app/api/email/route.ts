@@ -1,52 +1,55 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { getOrganization } from '@/lib/server/docs';
+import { requireMember, serverBackendConfigured } from '@/lib/server/supabase';
+import { appUrl, invoicePdf, mailConfigured, quotePdf, sendMail } from '@/lib/server/mailer';
+import type { Customer, Invoice, Quote } from '@/lib/types';
 
 export const runtime = 'nodejs';
 
-const Email = z.object({
+const Body = z.object({
+  organizationId: z.string(),
   to: z.string().email(),
   subject: z.string().min(1).max(300),
   body: z.string().max(20_000),
-  fromName: z.string().optional(),
-  replyTo: z.string().email().optional().or(z.literal('')),
-  action: z.object({ label: z.string(), url: z.string().url() }).optional(),
-  attachments: z.array(z.object({ filename: z.string(), contentBase64: z.string() })).optional(),
+  action: z.object({ label: z.string().max(80), path: z.string().regex(/^\/[fo]\/[A-Z0-9]+$/) }).optional(),
+  /** The invoice or quote as the app has it right now (it may not be saved yet). */
+  invoice: z.unknown().optional(),
+  quote: z.unknown().optional(),
+  customer: z.unknown().optional(),
 });
 
-const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-
-function html(mail: z.infer<typeof Email>) {
-  const paragraphs = escape(mail.body).split(/\n{2,}/).map((p) => `<p style="margin:0 0 16px">${p.replace(/\n/g, '<br>')}</p>`).join('');
-  const button = mail.action
-    ? `<p style="margin:28px 0"><a href="${escape(mail.action.url)}" style="background:#0a0a0a;color:#fafafa;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;display:inline-block">${escape(mail.action.label)}</a></p>`
-    : '';
-  return `<!doctype html><html><body style="margin:0;background:#f5f5f5;padding:32px 16px;font-family:Geist,-apple-system,Segoe UI,Inter,sans-serif;color:#0a0a0a;font-size:15px;line-height:1.6"><div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e5e5e5;border-radius:24px;padding:32px">${paragraphs}${button}</div></body></html>`;
-}
-
 /**
- * Send a transactional e-mail via Resend (RESEND_API_KEY + EMAIL_FROM).
- * 501 when not configured: the client treats that as "demo, logged only".
+ * Send an invoice, reminder or quote from the app (Resend), with the PDF
+ * attached. Only members of the administration can send, and the button can
+ * only point to Brenqo's own invoice/quote pages.
  */
-export async function POST(req: Request) {
-  const key = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM;
-  if (!key || !from) return NextResponse.json({ error: 'E-mail niet geconfigureerd' }, { status: 501 });
-  const parsed = Email.safeParse(await req.json());
+export async function POST(req: Request): Promise<Response> {
+  if (!mailConfigured()) return NextResponse.json({ error: 'E-mail niet geconfigureerd' }, { status: 501 });
+  const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'Ongeldige e-mail', issues: parsed.error.issues }, { status: 400 });
-  const mail = parsed.data;
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from: mail.fromName ? `${mail.fromName} <${from}>` : from,
-      to: [mail.to],
-      reply_to: mail.replyTo || undefined,
-      subject: mail.subject,
-      text: `${mail.body}${mail.action ? `\n\n${mail.action.label}: ${mail.action.url}` : ''}`,
-      html: html(mail),
-      attachments: mail.attachments?.map((a) => ({ filename: a.filename, content: a.contentBase64 })),
-    }),
+  const m = parsed.data;
+  if (!serverBackendConfigured()) return NextResponse.json({ error: 'Niet geconfigureerd' }, { status: 501 });
+  const auth = await requireMember(req, m.organizationId, { write: true });
+  if (auth.error) return auth.error;
+  const org = await getOrganization(m.organizationId);
+  if (!org) return NextResponse.json({ error: 'Administratie niet gevonden' }, { status: 404 });
+
+  const attachments = [];
+  const inv = m.invoice as Invoice | undefined;
+  const quote = m.quote as Quote | undefined;
+  const customer = m.customer as Customer | undefined;
+  if (inv && inv.organizationId === org.id) attachments.push(await invoicePdf(org, customer, inv));
+  if (quote && quote.organizationId === org.id) attachments.push(await quotePdf(org, customer, quote));
+
+  const result = await sendMail({
+    from: org.name,
+    replyTo: org.email,
+    to: m.to,
+    subject: m.subject,
+    body: m.body,
+    action: m.action ? { label: m.action.label, url: `${appUrl(req)}${m.action.path}` } : undefined,
+    attachments,
   });
-  if (!res.ok) return NextResponse.json({ error: 'Versturen mislukt', detail: await res.text() }, { status: 502 });
-  return NextResponse.json(await res.json());
+  return NextResponse.json(result);
 }

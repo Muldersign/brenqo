@@ -2,8 +2,8 @@
 
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import { Check, X, Download, FileX, CalendarClock } from 'lucide-react';
-import { useStore } from '@/lib/store';
+import { Check, X, Download, FileX, CalendarClock, LoaderCircle } from 'lucide-react';
+import { usePublicQuote } from '@/lib/public/hooks';
 import { PublicShell } from '@/components/public-shell';
 import { Button } from '@/components/ui/button';
 import { QuoteStatusBadge } from '@/components/ui/badge';
@@ -23,12 +23,13 @@ export default function PublicQuotePage() {
 
 function PublicQuote() {
   const { token } = useParams<{ token: string }>();
-  const quote = useStore((s) => s.quotes.find((q) => q.publicToken === token));
-  const org = useStore((s) => s.organizations.find((o) => o.id === quote?.organizationId));
-  const customer = useStore((s) => s.customers.find((c) => c.id === quote?.customerId));
-  const respond = useStore((s) => s.respondToQuote);
+  const { state: view, respond } = usePublicQuote(token);
   const [declining, setDeclining] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  if (view.status === 'loading') return <div className="flex flex-col items-center gap-3 pt-24 text-muted"><LoaderCircle className="size-5 animate-spin" />Offerte wordt geladen…</div>;
+  const quote = view.status === 'ready' ? view.quote : undefined;
+  const org = view.status === 'ready' ? view.org : undefined;
+  const customer = view.status === 'ready' ? view.customer : undefined;
 
   if (!quote || !org || quote.state === 'draft') {
     return <div className="pt-16 text-center"><FileX className="mx-auto size-8 text-muted" /><h1 className="mt-4 font-display text-[22px] font-semibold">Offerte niet gevonden</h1></div>;
@@ -58,10 +59,10 @@ function PublicQuote() {
       </div>
       <div className="mt-5"><InvoiceDocument org={org} customer={customer} doc={quoteToDoc(quote)} className="rounded-[22px] shadow-raised ring-1 ring-line" /></div>
 
-      <Modal open={confirming} onOpenChange={setConfirming} title="Offerte accepteren?" description={`Je gaat akkoord met offerte ${quote.number} van ${formatEUR(total)}.`} size="sm" footer={<><Button variant="outline" onClick={() => setConfirming(false)}>Annuleren</Button><Button variant="success" onClick={() => { respond(token, true); setConfirming(false); }}><Check /> Ja, accepteren</Button></>}>
+      <Modal open={confirming} onOpenChange={setConfirming} title="Offerte accepteren?" description={`Je gaat akkoord met offerte ${quote.number} van ${formatEUR(total)}.`} size="sm" footer={<><Button variant="outline" onClick={() => setConfirming(false)}>Annuleren</Button><Button variant="success" onClick={async () => { await respond(true); setConfirming(false); }}><Check /> Ja, accepteren</Button></>}>
         <p className="text-[13.5px] text-muted">{org.name} krijgt direct bericht.</p>
       </Modal>
-      <Modal open={declining} onOpenChange={setDeclining} title="Offerte afwijzen" size="sm" footer={<><Button variant="outline" onClick={() => setDeclining(false)}>Annuleren</Button><Button variant="danger" onClick={() => { respond(token, false); setDeclining(false); }}>Afwijzen</Button></>}>
+      <Modal open={declining} onOpenChange={setDeclining} title="Offerte afwijzen" size="sm" footer={<><Button variant="outline" onClick={() => setDeclining(false)}>Annuleren</Button><Button variant="danger" onClick={async () => { await respond(false); setDeclining(false); }}>Afwijzen</Button></>}>
         <Textarea placeholder="Wil je laten weten waarom? (optioneel)" />
       </Modal>
     </div>

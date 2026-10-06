@@ -13,7 +13,7 @@ import { formatDocNumber } from '@/lib/domain/numbering';
 import { invoiceTotal } from '@/lib/domain/calc';
 import { formatEUR } from '@/lib/domain/money';
 import { formatDateLong } from '@/lib/domain/dates';
-import { deliverEmail, publicUrl } from '@/lib/services/email';
+import { sendInvoiceNow } from '@/lib/services/send';
 
 export function SendInvoiceModal() {
   const id = useUI((s) => s.sendInvoiceId);
@@ -21,7 +21,6 @@ export function SendInvoiceModal() {
   const inv = useStore((s) => s.invoices.find((x) => x.id === id));
   const org = useStore((s) => s.organizations.find((o) => o.id === inv?.organizationId));
   const customer = useStore((s) => s.customers.find((c) => c.id === inv?.customerId));
-  const sendInvoice = useStore((s) => s.sendInvoice);
   const [mail, setMail] = useState({ to: '', subject: '', body: '' });
   const [sending, setSending] = useState(false);
 
@@ -50,16 +49,14 @@ export function SendInvoiceModal() {
       return;
     }
     setSending(true);
-    const result = await deliverEmail({
-      ...mail,
-      fromName: org.name,
-      replyTo: org.email,
-      action: org.payments.payButtonInEmail ? { label: `Bekijk en betaal ${formatEUR(invoiceTotal(inv))}`, url: publicUrl(`/f/${inv.publicToken}`) } : undefined,
-    });
-    sendInvoice(inv.id, mail);
+    const result = await sendInvoiceNow(inv.id, mail);
     setSending(false);
+    if (!result.delivered) {
+      toast.error('Versturen lukte niet', { description: result.error ?? 'Probeer het zo nog eens.' });
+      return;
+    }
     setUI({ sendInvoiceId: null });
-    toast.success(`Factuur ${number} is verstuurd`, {
+    toast.success(`Factuur ${result.number} is verstuurd`, {
       description: `Naar ${mail.to}${result.demo ? ' (demo: e-mail staat in het verzendlog)' : ''}. We laten het weten zodra hij bekeken of betaald is.`,
     });
   }

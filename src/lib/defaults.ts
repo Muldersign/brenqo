@@ -109,7 +109,7 @@ export function blankOrganization(id: string, name: string, year: number): Organ
     invoiceEmailBody: DEFAULT_INVOICE_EMAIL_BODY,
     quoteEmailSubject: DEFAULT_QUOTE_EMAIL_SUBJECT,
     quoteEmailBody: DEFAULT_QUOTE_EMAIL_BODY,
-    inboxAddress: `${slug}-${Math.random().toString(36).slice(2, 6).toUpperCase()}@inbox.brenqo.nl`,
+    inboxAddress: `${slug}-${Math.random().toString(36).slice(2, 6).toUpperCase()}@${process.env.NEXT_PUBLIC_INBOX_DOMAIN || 'inbox.brenqo.nl'}`,
     reminders: { enabled: true, steps: defaultReminderSteps() },
     payments: {
       provider: 'none',

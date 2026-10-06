@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { PanelLeftClose, PanelLeft, Sparkles } from 'lucide-react';
+import { PanelLeftClose, PanelLeft, Sparkles, Settings, LogOut } from 'lucide-react';
+import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/menu';
+import { backendEnabled } from '@/lib/backend/config';
+import { signOut } from '@/lib/backend/sync';
 import { NAV, isActive } from './nav';
 import { OrgSwitcher } from './org-switcher';
 import { useAttention } from './use-attention';
@@ -93,15 +96,23 @@ export function Sidebar() {
         </div>
       )}
 
-      <div className={cn('flex items-center gap-3 border-t border-line px-4 py-3.5', collapsed && 'justify-center px-2')}>
-        <Avatar name={user.name} size={32} />
-        {!collapsed && (
-          <div className="min-w-0">
-            <div className="truncate text-[13.5px] font-medium">{user.name}</div>
-            <div className="truncate text-[12px] text-muted">{user.email}</div>
-          </div>
-        )}
-      </div>
+      <Menu>
+        <MenuTrigger asChild>
+          <button className={cn('flex items-center gap-3 border-t border-line px-4 py-3.5 text-left transition hover:bg-[#f0f0f0]', collapsed && 'justify-center px-2')}>
+            <Avatar name={user.name} size={32} />
+            {!collapsed && (
+              <div className="min-w-0">
+                <div className="truncate text-[13.5px] font-medium">{user.name}</div>
+                <div className="truncate text-[12px] text-muted">{user.email}</div>
+              </div>
+            )}
+          </button>
+        </MenuTrigger>
+        <MenuContent align="start" side="top" className="w-[240px]">
+          <MenuItem icon={<Settings />} asChild><Link href="/instellingen">Instellingen</Link></MenuItem>
+          {backendEnabled && <MenuItem icon={<LogOut />} onSelect={() => signOut()}>Uitloggen</MenuItem>}
+        </MenuContent>
+      </Menu>
     </aside>
   );
 }

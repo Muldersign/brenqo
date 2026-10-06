@@ -33,22 +33,31 @@ Zonder configuratie draait Brenqo als **volledig klikbare demo** met twee admini
 | **Meerdere administraties** | Volledig gescheiden data, nummering, huisstijl en instellingen; snel wisselen linksboven |
 | **PWA** | Installeerbaar op iPhone/Android, standalone, safe areas, service worker met offline-pagina, snelkoppelingen (*Bon scannen*, *Nieuwe factuur*), push-handler |
 
-## Integraties (optioneel, via `.env.local`)
+## Van demo naar echt
 
-Zie `.env.example`. Elke integratie valt netjes terug op de demo als de sleutel ontbreekt.
+Zonder configuratie is Brenqo een klikbare demo (data in de browser). Met Supabase ingesteld wordt het een echte meergebruikers-app: inloggen met een code per mail, alle administraties in de database, afgeschermd per administratie. **Volg [`docs/SETUP.md`](docs/SETUP.md)**: stap voor stap, per onderdeel.
 
-| Functie | Provider | Route |
+| Functie | Dienst | Waar |
 | --- | --- | --- |
-| Bon/factuur uitlezen | Claude vision (`ANTHROPIC_API_KEY`) | `POST /api/ocr` |
-| E-mail versturen | Resend (`RESEND_API_KEY`, `EMAIL_FROM`) | `POST /api/email` |
-| Online betalen | Mollie (`MOLLIE_API_KEY`, `APP_URL`) | `POST /api/payments`, `POST /api/webhooks/mollie` |
-| Inkomende inkoopfacturen | Postmark inbound (of vergelijkbaar) | `POST /api/inbound-email` |
-| PDF server-side | @react-pdf/renderer | `POST /api/invoices/pdf` |
-| Bankkoppeling | PSD2-aggregator (interface in `src/lib/server/bank.ts`) | — |
-| Database, auth, opslag | Supabase | `supabase/migrations/` |
+| Database, inloggen, bestanden | Supabase | `supabase/migrations/`, `src/lib/backend/` |
+| Hosting + dagelijkse taak | Vercel (Cron) | `vercel.json`, `/api/cron/daily` |
+| Facturen e-mailen (met PDF) | Resend | `/api/email` |
+| Online betalen, per administratie | Mollie | `/api/payments`, `/api/webhooks/mollie`, Instellingen → Betalingen |
+| Bonnen & facturen uitlezen | Claude vision | `/api/ocr` |
+| Inkoopfacturen per mail | Postmark inbound | `/api/inbound-email` |
+| Bank | Afschrift-import (CSV/CAMT.053), PSD2 via GoCardless | `src/lib/domain/bank-import.ts`, `/api/bank/*` |
+| Pushmeldingen | Web Push (VAPID) | `/api/push/subscribe`, `public/sw.js` |
 
 Meer over de opbouw: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
+## Testen
+
+```bash
+npm test           # bedrijfslogica, bankimport, synchronisatie (32 tests)
+npm run test:db    # schema + row level security op Postgres
+npm run test:e2e   # end-to-end: echte Supabase-client, Postgres, PostgREST
+```
+
 ## Techniek
 
-Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Radix UI · Motion · Recharts · Zustand · @react-pdf/renderer · Supabase (PostgreSQL + RLS) · Vitest
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Geist · Radix UI · Motion · Recharts · Zustand · @react-pdf/renderer · Supabase (PostgreSQL + RLS) · Vitest

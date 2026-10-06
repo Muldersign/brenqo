@@ -510,13 +510,13 @@ export function createDemoData(today = todayISO()): AppData {
   vzSponsors.forEach((s, i) => {
     const amount = sponsorsRaw[i][2];
     makeInvoice(vz, s, vzn(), addDays(seasonStart, -10), [line(`Sponsorpakket seizoen ${season}`, 1, 'stuk', amount, 0)], {
-      paidOn: i < 3 ? addDays(seasonStart, 5 + i * 3) : undefined, viewed: true,
+      paidOn: i < 3 ? addDays(seasonStart, 5 + i * 3) : undefined, viewed: true, reminders: i < 3 ? [] : [3, 10],
     });
   });
   vzMembers.slice(0, 16).forEach((m, i) => {
     const paid = i < 11;
     makeInvoice(vz, m, vzn(), seasonStart, [line(`Contributie seizoen ${season}`, 1, 'seizoen', 150, 0)], {
-      paidOn: paid ? addDays(seasonStart, 2 + i) : undefined, viewed: i % 3 !== 0, reminders: !paid && i % 2 === 0 ? [3] : [],
+      paidOn: paid ? addDays(seasonStart, 2 + i) : undefined, viewed: i % 3 !== 0, reminders: paid ? [] : [3],
       state: !paid && i % 3 === 0 ? 'sent' : undefined,
     });
   });

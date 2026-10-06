@@ -7,7 +7,9 @@ import { Camera, Upload, X, FileText, Sparkles, Check, Pencil, Brain, ScanLine, 
 import { toast } from 'sonner';
 import { useUI } from '@/lib/store/ui';
 import { useCategories, useOrg, useStore, useSuppliers } from '@/lib/store';
-import { recognizeDocument, makePreview, type OcrResult } from '@/lib/services/ocr';
+import { recognizeDocument, makePreview, normalizeFile, type OcrResult } from '@/lib/services/ocr';
+import { backendEnabled } from '@/lib/backend/config';
+import { uploadDocument } from '@/lib/backend/sync';
 import { guessCategory } from '@/lib/domain/categories';
 import { formatEUR, parseAmount, round2 } from '@/lib/domain/money';
 import { formatDateLong } from '@/lib/domain/dates';
@@ -35,6 +37,7 @@ export function ScanFlow() {
   const [progress, setProgress] = useState(0);
   const [dragging, setDragging] = useState(false);
   const cameraRef = useRef<HTMLInputElement>(null);
+  const fileRefOriginal = useRef<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const suppliers = useSuppliers();
   const categories = useCategories();
@@ -55,9 +58,11 @@ export function ScanFlow() {
     }
   }, [open, capture]);
 
-  async function handleFile(file: File | undefined) {
-    if (!file) return;
+  async function handleFile(input: File | undefined) {
+    if (!input) return;
     setStep('scanning');
+    const file = await normalizeFile(input);
+    fileRefOriginal.current = file;
     setProgress(8);
     const tick = setInterval(() => setProgress((p) => Math.min(92, p + Math.random() * 14)), 220);
     try {
@@ -83,8 +88,10 @@ export function ScanFlow() {
     }
   }
 
-  function save() {
+  async function save() {
     if (!draft) return;
+    const original = fileRefOriginal.current;
+    const storagePath = backendEnabled && original ? await uploadDocument(org.id, original, draft.fileName) : undefined;
     saveExpense({
       kind,
       supplierName: draft.supplierName || 'Onbekende leverancier',
@@ -101,7 +108,7 @@ export function ScanFlow() {
       status: 'processed',
       paid: isReceipt,
       source: capture ? 'camera' : 'upload',
-      document: { fileName: draft.fileName, mimeType: draft.mimeType, previewDataUrl: draft.preview },
+      document: { fileName: draft.fileName, mimeType: draft.mimeType, previewDataUrl: draft.preview, storagePath },
     });
     pushNotification({ kind: isReceipt ? 'receipt' : 'expense', title: `${isReceipt ? 'Bon' : 'Inkoopfactuur'} van ${draft.supplierName} is verwerkt.`, href: isReceipt ? '/bonnetjes' : '/inkoopfacturen' });
     setStep('done');

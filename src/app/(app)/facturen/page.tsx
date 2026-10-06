@@ -17,7 +17,7 @@ import { formatEUR, parseAmount } from '@/lib/domain/money';
 import { daysBetween, formatDate, todayISO } from '@/lib/domain/dates';
 import { normalize, cn, pluralize } from '@/lib/utils';
 import { invoiceEmail } from '@/lib/emails';
-import { deliverEmail, publicUrl } from '@/lib/services/email';
+import { sendInvoiceNow } from '@/lib/services/send';
 import { downloadPdf, invoiceToDoc } from '@/lib/pdf/download';
 
 type Filter = 'all' | 'draft' | 'open' | 'overdue' | 'paid';
@@ -73,17 +73,18 @@ export default function InvoicesPage() {
   const toggle = (id: string) => setSelected((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
 
   async function bulkSend() {
-    const s = useStore.getState();
     const sendable = selectedRows.filter((r) => r.status !== 'paid' && r.status !== 'credited');
+    let failed = 0;
     for (const r of sendable) {
       const mail = invoiceEmail(org, r.customer, r.inv);
-      if (!mail.to) continue;
-      await deliverEmail({ ...mail, fromName: org.name, action: { label: 'Bekijk en betaal', url: publicUrl(`/f/${r.inv.publicToken}`) } });
-      s.sendInvoice(r.inv.id, mail);
+      if (!mail.to) { failed++; continue; }
+      const res = await sendInvoiceNow(r.inv.id, mail);
+      if (!res.delivered) failed++;
     }
+    if (failed) toast.error(`${pluralize(failed, 'factuur kon', 'facturen konden')} niet worden verstuurd`, { description: 'Controleer of de klant een e-mailadres heeft.' });
     setConfirmSend(false);
     setSelected(new Set());
-    toast.success(`${pluralize(sendable.length, 'factuur', 'facturen')} verstuurd`, { description: 'Iedere klant krijgt zijn eigen factuur met betaallink.' });
+    if (sendable.length > failed) toast.success(`${pluralize(sendable.length - failed, 'factuur', 'facturen')} verstuurd`, { description: 'Iedere klant krijgt zijn eigen factuur met betaallink.' });
   }
 
   async function bulkDownload() {

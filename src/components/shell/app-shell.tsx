@@ -16,6 +16,8 @@ import { CustomerDrawer } from '@/components/flows/customer-drawer';
 import { ReminderModal } from '@/components/flows/reminder';
 import { SendQuoteModal } from '@/components/flows/send-quote';
 import { Skeleton } from '@/components/ui/misc';
+import { AuthGate } from '@/components/backend/auth-gate';
+import { backendEnabled } from '@/lib/backend/config';
 
 export function useHydrated() {
   const [hydrated, setHydrated] = useState(false);
@@ -36,6 +38,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       if (!localStorage.getItem('brenqo-data')) useStore.setState({});
     } catch { /* ignore */ }
     const s = useStore.getState();
+    if (backendEnabled) return; // the server's daily job sends reminders and recurring invoices
     if (s.automationsRanOn !== todayISO()) {
       const r = s.runAutomations();
       const parts = [
@@ -50,6 +53,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (!hydrated) return <ShellSkeleton />;
 
   return (
+    <AuthGate>
     <div className="flex min-h-dvh">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
@@ -65,6 +69,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <ReminderModal />
       <CustomerDrawer />
     </div>
+    </AuthGate>
   );
 }
 

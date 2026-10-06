@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { ShieldCheck, Lock } from 'lucide-react';
 import { useStore } from '@/lib/store';
+import { backendEnabled } from '@/lib/backend/config';
 import { useHydrated } from '@/components/shell/app-shell';
 import { Skeleton } from '@/components/ui/misc';
 import { BrandMark } from '@/components/shell/sidebar';
@@ -11,6 +12,7 @@ import { BrandMark } from '@/components/shell/sidebar';
 export function PublicShell({ children }: { children: React.ReactNode }) {
   const hydrated = useHydrated();
   useEffect(() => {
+    if (backendEnabled) return;
     try { if (!localStorage.getItem('brenqo-data')) useStore.setState({}); } catch { /* ignore */ }
   }, []);
   return (

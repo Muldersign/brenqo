@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { extractDocument, ocrConfigured } from '@/lib/server/ocr';
+import { requireUser, serverBackendConfigured } from '@/lib/server/supabase';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -13,6 +14,11 @@ const MAX_BYTES = 15 * 1024 * 1024;
  */
 export async function POST(req: Request) {
   if (!ocrConfigured()) return NextResponse.json({ error: 'OCR niet geconfigureerd' }, { status: 501 });
+  // With accounts switched on, only signed-in users may use the (paid) AI reader.
+  if (serverBackendConfigured()) {
+    const auth = await requireUser(req);
+    if (auth.error) return auth.error;
+  }
   const form = await req.formData();
   const file = form.get('file');
   const kind = form.get('kind') === 'invoice' ? 'invoice' : 'receipt';

@@ -3,6 +3,7 @@
 import type { VatRate } from '../types';
 import { splitVat } from '../domain/calc';
 import { todayISO, addDays } from '../domain/dates';
+import { authedFetch } from '../backend/client';
 
 /** What the recogniser returns. Every field is a suggestion the user confirms. */
 export interface OcrResult {
@@ -19,6 +20,21 @@ export interface OcrResult {
   categoryHint: string;
   /** `ai`: read by the vision model; `demo`: simulated because no API key is configured. */
   engine: 'ai' | 'demo';
+}
+
+/** iPhone photos can be HEIC, which most browsers and the OCR model can't read: convert to JPEG. */
+export async function normalizeFile(file: File): Promise<File> {
+  const heic = /heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+  if (!heic) return file;
+  try {
+    const heic2any = (await import('heic2any')).default;
+    const out = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
+    const blob = Array.isArray(out) ? out[0] : out;
+    return new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+  } catch (e) {
+    console.warn('HEIC omzetten mislukt', e);
+    return file;
+  }
 }
 
 /** Downscale an image to a small JPEG preview so it fits comfortably in storage. */
@@ -56,7 +72,7 @@ const DEMO: Record<string, Omit<OcrResult, 'date' | 'dueDate' | 'engine'>> = {
   ah: { supplierName: 'Albert Heijn', invoiceNumber: '', ...(() => { const s = splitVat(18.4, 9); return { subtotal: s.base, vatAmount: s.vat }; })(), total: 18.4, vatRate: 9, iban: '', description: 'Koffie en lunch klantoverleg', categoryHint: 'Representatie' },
 };
 /** The single-file demo build has no server: skip the API and simulate. */
-const IS_STANDALONE_DEMO = (process.env.NODE_ENV as string) === 'demo';
+const IS_STANDALONE_DEMO = process.env.NEXT_PUBLIC_STANDALONE_DEMO === '1';
 
 const ROTATION = ['praxis', 'shell', 'ah'];
 let rotation = 0;
@@ -82,7 +98,7 @@ export async function recognizeDocument(file: File, kind: 'receipt' | 'invoice')
     const body = new FormData();
     body.append('file', file);
     body.append('kind', kind);
-    const res = await fetch('/api/ocr', { method: 'POST', body });
+    const res = await authedFetch('/api/ocr', { method: 'POST', body });
     if (res.ok) result = { ...(await res.json()), engine: 'ai' } as OcrResult;
   } catch {
     /* offline or not configured: fall through to demo */

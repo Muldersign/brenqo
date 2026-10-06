@@ -1,19 +1,9 @@
 'use client';
 
-import type { Customer, Invoice, Organization, Quote } from '../types';
+import type { Customer, Organization } from '../types';
 import type { DocumentData } from '@/components/documents/invoice-document';
-import { amountPaid } from '../domain/calc';
 
-export function invoiceToDoc(inv: Invoice, creditOfNumber?: string): DocumentData {
-  return {
-    kind: inv.kind, number: inv.number, issueDate: inv.issueDate, dueDate: inv.dueDate, reference: inv.reference,
-    lines: inv.lines, note: inv.note, paidAmount: inv.kind === 'invoice' ? amountPaid(inv) : 0, creditOfNumber,
-  };
-}
-
-export function quoteToDoc(q: Quote): DocumentData {
-  return { kind: 'quote', number: q.number, issueDate: q.issueDate, dueDate: q.validUntil, reference: q.reference, lines: q.lines, note: q.note };
-}
+export { invoiceToDocData as invoiceToDoc, quoteToDocData as quoteToDoc } from './doc-data';
 
 /** Render the PDF in the browser (lazy-loaded, ~1 MB) and download it. */
 export async function downloadPdf(org: Organization, customer: Customer | undefined, doc: DocumentData) {

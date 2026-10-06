@@ -1,5 +1,6 @@
 import { renderToBuffer } from '@react-pdf/renderer';
 import { NextResponse } from 'next/server';
+import { requireUser, serverBackendConfigured } from '@/lib/server/supabase';
 import { InvoicePdf } from '@/lib/pdf/invoice-pdf';
 import type { Customer, Organization } from '@/lib/types';
 import type { DocumentData } from '@/components/documents/invoice-document';
@@ -12,6 +13,10 @@ export const runtime = 'nodejs';
  * the invoice from the database by id instead of receiving it in the body.
  */
 export async function POST(req: Request) {
+  if (serverBackendConfigured()) {
+    const auth = await requireUser(req);
+    if (auth.error) return auth.error;
+  }
   const { org, customer, doc } = (await req.json()) as { org: Organization; customer?: Customer; doc: DocumentData };
   if (!org || !doc?.lines) return NextResponse.json({ error: 'Ongeldige factuur' }, { status: 400 });
   const buffer = await renderToBuffer(<InvoicePdf org={org} customer={customer} doc={doc} />);

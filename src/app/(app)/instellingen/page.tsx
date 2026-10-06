@@ -23,6 +23,10 @@ import { formatDocNumber } from '@/lib/domain/numbering';
 import { todayISO, addDays } from '@/lib/domain/dates';
 import type { Organization, VatRate } from '@/lib/types';
 import { cn, initials } from '@/lib/utils';
+import { backendEnabled } from '@/lib/backend/config';
+import { signOut } from '@/lib/backend/sync';
+import { authedFetch } from '@/lib/backend/client';
+import { PushToggle } from '@/components/backend/push-toggle';
 
 const TABS = [
   { id: 'bedrijf', label: 'Bedrijf', icon: Building },
@@ -228,6 +232,19 @@ function RemindersTab({ org, update }: TabProps) {
 
 function PaymentsTab({ org, update }: TabProps) {
   const [connecting, setConnecting] = useState(false);
+  const [keyInput, setKeyInput] = useState('');
+  const [askKey, setAskKey] = useState(false);
+  async function saveKey(apiKey: string | null) {
+    setConnecting(true);
+    const res = await authedFetch('/api/settings/mollie', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ organizationId: org.id, apiKey }) });
+    const j = (await res.json().catch(() => ({}))) as { error?: string; mode?: string };
+    setConnecting(false);
+    if (!res.ok) { toast.error(j.error ?? 'Opslaan lukte niet'); return; }
+    set({ connected: !!apiKey, provider: apiKey ? 'mollie' : 'none' });
+    setAskKey(false);
+    setKeyInput('');
+    toast.success(apiKey ? `Mollie is gekoppeld${j.mode === 'test' ? ' (testmodus)' : ''}` : 'Mollie ontkoppeld');
+  }
   const p = org.payments;
   const set = (patch: Partial<Organization['payments']>) => update({ payments: { ...p, ...patch } });
   const m = (k: keyof Organization['payments']['methods'], v: boolean) => set({ methods: { ...p.methods, [k]: v } });
@@ -240,7 +257,11 @@ function PaymentsTab({ org, update }: TabProps) {
             <div className="flex items-center gap-2 text-[15px] font-semibold">Mollie {p.connected && <Badge tone="success" dot>Gekoppeld</Badge>}</div>
             <div className="text-[13px] text-muted">{p.connected ? 'Betalingen komen binnen op je eigen rekening. Webhooks zijn actief.' : 'Koppel je Mollie-account in een minuut.'}</div>
           </div>
-          {p.connected
+          {backendEnabled ? (
+            p.connected
+              ? <Button variant="outline" loading={connecting} onClick={() => saveKey(null)}>Ontkoppelen</Button>
+              : <Button onClick={() => setAskKey(true)}>Koppel Mollie</Button>
+          ) : p.connected
             ? <Button variant="outline" onClick={() => { set({ connected: false, provider: 'none' }); toast('Mollie ontkoppeld'); }}>Ontkoppelen</Button>
             : <Button loading={connecting} onClick={() => { setConnecting(true); setTimeout(() => { set({ connected: true, provider: 'mollie' }); setConnecting(false); toast.success('Mollie is gekoppeld'); }, 1200); }}>Koppel Mollie</Button>}
         </div>
@@ -257,6 +278,14 @@ function PaymentsTab({ org, update }: TabProps) {
           <SwitchRow title="Bankoverschrijving" description="Je IBAN en het factuurnummer staan altijd op de factuur." checked={p.methods.banktransfer} onCheckedChange={(v) => m('banktransfer', v)} />
         </div>
       </Section>
+      <Modal open={askKey} onOpenChange={setAskKey} title="Mollie koppelen" size="sm" description={`Voor ${org.name}. Iedere administratie gebruikt haar eigen Mollie-account, dus het geld komt op de juiste rekening.`}
+        footer={<><Button variant="outline" onClick={() => setAskKey(false)}>Annuleren</Button><Button loading={connecting} disabled={!keyInput.trim()} onClick={() => saveKey(keyInput.trim())}>Koppelen</Button></>}>
+        <div className="space-y-3">
+          <Field label="API-sleutel" hint="Mollie-dashboard → Ontwikkelaars → API-sleutels. Begin met de test-sleutel (test_…), daarna de live-sleutel (live_…). De sleutel wordt alleen op de server bewaard.">
+            <Input value={keyInput} onChange={(e) => setKeyInput(e.target.value)} placeholder="test_…" autoComplete="off" spellCheck={false} />
+          </Field>
+        </div>
+      </Modal>
     </>
   );
 }
@@ -322,6 +351,7 @@ function AutomationTab({ org, update }: TabProps) {
     <Section title="Automatiseringen" description="Laat Brenqo het werk op de achtergrond doen. Je kunt alles op ieder moment aan of uit zetten.">
       <div className="divide-y divide-line">
         {rows.map(([k, title, desc, icon]) => <SwitchRow key={k} icon={icon} title={title} description={desc} checked={a[k]} onCheckedChange={(v) => set(k, v)} />)}
+        <PushToggle />
       </div>
     </Section>
   );
@@ -372,9 +402,15 @@ function UsersTab() {
         </ul>
         <Button variant="outline" className="mt-4" onClick={() => setOpen(true)}><Plus /> Iemand uitnodigen</Button>
       </Section>
-      <Section title="Demo-gegevens" description="Begin opnieuw met de voorbeeldadministraties Muldersign en V&Z Veendam.">
-        <Button variant="outline" onClick={() => { resetDemo(); toast.success('Demo-gegevens hersteld'); }}><RotateCcw /> Demo herstellen</Button>
-      </Section>
+      {backendEnabled ? (
+        <Section title="Account" description="Je bent ingelogd. Je gegevens staan veilig in de database.">
+          <Button variant="outline" onClick={() => signOut()}>Uitloggen</Button>
+        </Section>
+      ) : (
+        <Section title="Demo-gegevens" description="Begin opnieuw met de voorbeeldadministraties Muldersign en V&Z Veendam.">
+          <Button variant="outline" onClick={() => { resetDemo(); toast.success('Demo-gegevens hersteld'); }}><RotateCcw /> Demo herstellen</Button>
+        </Section>
+      )}
       <div className="flex items-center gap-2 px-1 text-[12.5px] text-muted"><Sparkles className="size-3.5" /> Iedere administratie is volledig gescheiden: gebruikers zien alleen de administraties waar ze lid van zijn.</div>
       <Modal open={open} onOpenChange={setOpen} title="Iemand uitnodigen" size="sm" footer={<><Button variant="outline" onClick={() => setOpen(false)}>Annuleren</Button><Button disabled={!form.email} onClick={() => { invite(form); setOpen(false); toast.success(`Uitnodiging verstuurd naar ${form.email}`); setForm({ name: '', email: '', role: 'admin' }); }}>Uitnodigen</Button></>}>
         <div className="space-y-4">

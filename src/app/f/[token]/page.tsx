@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
-import { Download, Eye, CircleCheck, ChevronDown, FileX, Landmark, Copy, CalendarClock } from 'lucide-react';
+import { Download, Eye, CircleCheck, ChevronDown, FileX, Landmark, Copy, CalendarClock, LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStore } from '@/lib/store';
 import { PublicShell } from '@/components/public-shell';
@@ -17,6 +17,8 @@ import { invoiceStatus } from '@/lib/domain/status';
 import { formatEUR } from '@/lib/domain/money';
 import { formatDateLong, todayISO } from '@/lib/domain/dates';
 import { startPayment } from '@/lib/services/payments';
+import { usePublicInvoice } from '@/lib/public/hooks';
+import { backendEnabled } from '@/lib/backend/config';
 
 export default function PublicInvoicePage() {
   return <PublicShell><PublicInvoice /></PublicShell>;
@@ -25,16 +27,21 @@ export default function PublicInvoicePage() {
 function PublicInvoice() {
   const { token } = useParams<{ token: string }>();
   const params = useSearchParams();
-  const inv = useStore((s) => s.invoices.find((i) => i.publicToken === token && i.state !== 'draft'));
-  const org = useStore((s) => s.organizations.find((o) => o.id === inv?.organizationId));
-  const customer = useStore((s) => s.customers.find((c) => c.id === inv?.customerId));
+  const justPaid = params.get('betaald') === '1';
+  const view = usePublicInvoice(token, { waitForPayment: justPaid });
   const markViewed = useStore((s) => s.markInvoiceViewed);
   const router = useRouter();
   const [showDoc, setShowDoc] = useState(false);
   const [paying, setPaying] = useState(false);
-  const justPaid = params.get('betaald') === '1';
+  const inv = view.status === 'ready' ? view.invoice : undefined;
+  const org = view.status === 'ready' ? view.org : undefined;
+  const customer = view.status === 'ready' ? view.customer : undefined;
 
-  useEffect(() => { if (inv) markViewed(token); }, [inv?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (inv && !backendEnabled) markViewed(token); }, [inv?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (view.status === 'loading') {
+    return <div className="flex flex-col items-center gap-3 pt-24 text-muted"><LoaderCircle className="size-5 animate-spin" />Factuur wordt geladen…</div>;
+  }
 
   if (!inv || !org) {
     return (
@@ -42,7 +49,7 @@ function PublicInvoice() {
         <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-surface text-muted shadow-raised ring-1 ring-line"><FileX className="size-6" /></div>
         <h1 className="mt-5 font-display text-[22px] font-semibold">Deze factuur kunnen we niet vinden</h1>
         <p className="mt-2 text-[14.5px] text-muted">Controleer de link in je e-mail, of neem contact op met de afzender.</p>
-        <p className="mt-6 text-[12.5px] text-faint">In deze demo werken factuurlinks in dezelfde browser als waarin de factuur is gemaakt.</p>
+        {!backendEnabled && <p className="mt-6 text-[12.5px] text-faint">In deze demo werken factuurlinks in dezelfde browser als waarin de factuur is gemaakt.</p>}
       </div>
     );
   }
@@ -56,9 +63,14 @@ function PublicInvoice() {
   async function pay() {
     if (!inv) return;
     setPaying(true);
-    const url = await startPayment(inv, `${window.location.origin}/f/${token}`);
-    if (url.startsWith('/')) router.push(url);
-    else window.location.href = url;
+    const result = await startPayment(inv);
+    if ('error' in result) {
+      setPaying(false);
+      toast.error(result.error);
+      return;
+    }
+    if (result.url.startsWith('/')) router.push(result.url);
+    else window.location.href = result.url;
   }
 
   return (
@@ -101,7 +113,9 @@ function PublicInvoice() {
 
           <div className="mx-auto mt-6 grid max-w-sm grid-cols-2 gap-2.5">
             <Button variant="outline" onClick={() => setShowDoc((v) => !v)}><Eye /> Bekijk factuur <ChevronDown className={`transition ${showDoc ? 'rotate-180' : ''}`} /></Button>
-            <Button variant="outline" onClick={() => downloadPdf(org, customer, invoiceToDoc(inv))}><Download /> Download PDF</Button>
+            {backendEnabled
+              ? <Button variant="outline" asChild><a href={`/api/public/invoice/${token}/pdf`} target="_blank" rel="noreferrer"><Download /> Download PDF</a></Button>
+              : <Button variant="outline" onClick={() => downloadPdf(org, customer, invoiceToDoc(inv))}><Download /> Download PDF</Button>}
           </div>
         </div>
 

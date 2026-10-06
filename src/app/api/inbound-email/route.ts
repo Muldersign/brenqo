@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { extractDocument, ocrConfigured } from '@/lib/server/ocr';
-import { createExpenseDraft, findOrganizationByInbox, repositoryConfigured, storeDocument } from '@/lib/server/repository';
+import { getOrganization, putDoc, storeDocument } from '@/lib/server/docs';
+import { adminClient, serverBackendConfigured } from '@/lib/server/supabase';
+import { notifyOrganization } from '@/lib/server/push';
+import { guessCategory } from '@/lib/domain/categories';
+import { splitVat } from '@/lib/domain/calc';
+import { todayISO } from '@/lib/domain/dates';
+import { uid } from '@/lib/utils';
+import type { Expense, Supplier } from '@/lib/types';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -9,44 +16,57 @@ interface InboundPayload {
   To?: string;
   ToFull?: { Email: string }[];
   From?: string;
+  FromName?: string;
   Subject?: string;
-  Attachments?: { Name: string; Content: string; ContentType: string; ContentLength?: number }[];
+  Attachments?: { Name: string; Content: string; ContentType: string }[];
 }
 
 /**
- * Inbound e-mail webhook (Postmark inbound JSON format; Resend/SendGrid are
- * similar). Mail sent to `<administratie>-XXXX@inbox.brenqo.nl` lands here:
- * find the administration by address → take PDF/image attachments → store
- * them → read them with OCR → create a draft purchase invoice ("Even
- * controleren") → notify the user.
- * Protect this route with the provider's basic-auth or signature (INBOUND_SECRET).
+ * Inbound e-mail webhook (Postmark inbound JSON). Mail to the administration's
+ * own address (Instellingen → E-mail) becomes a purchase invoice in
+ * "Even controleren": attachment stored, read by OCR, supplier recognised.
+ * Protect with basic auth: https://brenqo:<INBOUND_SECRET>@app.../api/inbound-email
  */
 export async function POST(req: Request) {
-  if (!repositoryConfigured()) return NextResponse.json({ error: 'Niet geconfigureerd' }, { status: 501 });
+  if (!serverBackendConfigured()) return NextResponse.json({ error: 'Niet geconfigureerd' }, { status: 501 });
   const secret = process.env.INBOUND_SECRET;
-  if (secret && req.headers.get('authorization') !== `Basic ${Buffer.from(`brenqo:${secret}`).toString('base64')}`) {
+  if (!secret || req.headers.get('authorization') !== `Basic ${Buffer.from(`brenqo:${secret}`).toString('base64')}`) {
     return NextResponse.json({ error: 'Niet toegestaan' }, { status: 401 });
   }
   const mail = (await req.json()) as InboundPayload;
-  const recipients = [...(mail.ToFull?.map((t) => t.Email) ?? []), ...(mail.To?.split(',') ?? [])].map((s) => s.trim().toLowerCase());
-  let org: Awaited<ReturnType<typeof findOrganizationByInbox>> = null;
+  const recipients = [...(mail.ToFull?.map((t) => t.Email) ?? []), ...(mail.To?.split(',') ?? [])].map((s) => s.trim().replace(/^.*</, '').replace(/>$/, '').toLowerCase());
+  let orgId: string | null = null;
   for (const r of recipients) {
-    org = await findOrganizationByInbox(r.replace(/^.*</, '').replace(/>$/, ''));
-    if (org) break;
+    const { data } = await adminClient().from('organizations').select('id').eq('inbox_address', r).maybeSingle();
+    if (data) { orgId = data.id; break; }
   }
-  if (!org) return NextResponse.json({ ok: true, skipped: 'unknown recipient' });
+  if (!orgId) return NextResponse.json({ ok: true, skipped: 'onbekend adres' });
+  const org = await getOrganization(orgId);
+  const { data: supRows } = await adminClient().from('suppliers').select('data').eq('organization_id', orgId);
+  const suppliers = (supRows ?? []).map((r) => r.data as Supplier);
 
-  const attachments = (mail.Attachments ?? []).filter((a) => /pdf|image\//.test(a.ContentType));
   let created = 0;
-  for (const a of attachments) {
+  for (const a of (mail.Attachments ?? []).filter((x) => /pdf|image\/(jpe?g|png|webp)/.test(x.ContentType))) {
     const bytes = Buffer.from(a.Content, 'base64');
-    const path = await storeDocument(org.id, a.Name, bytes, a.ContentType);
-    const fields = ocrConfigured() ? await extractDocument(bytes, a.ContentType, 'invoice') : null;
-    await createExpenseDraft(org.id, fields ? {
-      supplier_name: fields.supplierName, invoice_number: fields.invoiceNumber, date: fields.date || new Date().toISOString().slice(0, 10),
-      due_date: fields.dueDate || null, subtotal: fields.subtotal, vat_amount: fields.vatAmount, total: fields.total, vat_rate: fields.vatRate,
-      iban: fields.iban, description: fields.description, category: fields.categoryHint,
-    } : { supplier_name: mail.From ?? 'Onbekend', date: new Date().toISOString().slice(0, 10), total: 0, subtotal: 0, vat_amount: 0, vat_rate: 21, category: 'Overig', description: mail.Subject ?? '' }, { path, fileName: a.Name, mimeType: a.ContentType });
+    const storagePath = await storeDocument(orgId, a.Name, bytes, a.ContentType);
+    const fields = ocrConfigured() ? await extractDocument(bytes, a.ContentType, 'invoice').catch(() => null) : null;
+    const supplierName = fields?.supplierName || mail.FromName || mail.From || 'Onbekende leverancier';
+    const guess = guessCategory(supplierName, suppliers, org?.automations.recognizeSuppliers ?? true);
+    const total = fields?.total ?? 0;
+    const vatRate = guess.source === 'memory' ? guess.vatRate : fields?.vatRate ?? 21;
+    const split = splitVat(total, vatRate);
+    const expense: Expense = {
+      id: uid('exp'), organizationId: orgId, kind: 'invoice', supplierName, supplierId: guess.supplierId,
+      invoiceNumber: fields?.invoiceNumber ?? '', date: fields?.date || todayISO(), dueDate: fields?.dueDate || undefined,
+      subtotal: fields?.subtotal ?? split.base, vatAmount: fields?.vatAmount ?? split.vat, total, vatRate,
+      category: guess.source === 'memory' ? guess.category : fields?.categoryHint || guess.category,
+      description: fields?.description || mail.Subject || '', iban: fields?.iban ?? '', status: 'review', paid: false, source: 'email',
+      document: { fileName: a.Name, mimeType: a.ContentType, storagePath }, createdAt: new Date().toISOString(),
+    };
+    await putDoc('expenses', expense);
+    const title = `Nieuwe inkoopfactuur van ${supplierName} ontvangen.`;
+    await putDoc('notifications', { id: uid('ntf'), organizationId: orgId, kind: 'expense', title, body: 'Uitgelezen en klaar om te controleren.', href: '/inkoopfacturen', createdAt: new Date().toISOString(), read: false });
+    await notifyOrganization(orgId, { title, url: '/inkoopfacturen' }).catch(() => {});
     created++;
   }
   return NextResponse.json({ ok: true, created });

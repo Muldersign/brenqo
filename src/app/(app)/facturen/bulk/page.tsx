@@ -13,7 +13,7 @@ import { addDays, todayISO } from '@/lib/domain/dates';
 import { formatEUR, parseAmount, round2 } from '@/lib/domain/money';
 import { formatDocNumber } from '@/lib/domain/numbering';
 import { invoiceEmail } from '@/lib/emails';
-import { deliverEmail, publicUrl } from '@/lib/services/email';
+import { sendInvoiceNow } from '@/lib/services/send';
 import { normalize, pluralize, uid, cn } from '@/lib/utils';
 import type { VatRate } from '@/lib/types';
 
@@ -55,14 +55,12 @@ export default function BulkInvoicePage() {
   async function sendAll() {
     if (!created) return;
     setSending(true);
-    const s = useStore.getState();
     for (const id of created) {
-      const inv = s.invoices.find((x) => x.id === id) ?? useStore.getState().invoices.find((x) => x.id === id)!;
-      const customer = s.customers.find((c) => c.id === inv.customerId);
-      const mail = invoiceEmail(org, customer, inv);
+      const s = useStore.getState();
+      const inv = s.invoices.find((x) => x.id === id)!;
+      const mail = invoiceEmail(org, s.customers.find((c) => c.id === inv.customerId), inv);
       if (!mail.to) continue;
-      await deliverEmail({ ...mail, fromName: org.name, action: { label: 'Bekijk en betaal', url: publicUrl(`/f/${inv.publicToken}`) } });
-      useStore.getState().sendInvoice(id, mail);
+      await sendInvoiceNow(id, mail);
     }
     setSending(false);
     toast.success(`${pluralize(created.length, 'factuur', 'facturen')} verstuurd`, { description: 'We houden bij wie er betaald heeft en sturen automatisch herinneringen.' });

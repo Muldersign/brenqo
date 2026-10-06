@@ -20,6 +20,7 @@ import { formatDate, formatDateLong, todayISO, addDays } from '@/lib/domain/date
 import { findSupplier } from '@/lib/domain/categories';
 import type { Expense, VatRate } from '@/lib/types';
 import { normalize, cn, pluralize } from '@/lib/utils';
+import { documentUrl } from '@/lib/backend/sync';
 
 const MONTHS = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
 
@@ -258,6 +259,9 @@ function ExpenseDrawer({ id, onClose }: { id: string | null; onClose: () => void
             // eslint-disable-next-line @next/next/no-img-element
             ? <img src={expense.document.previewDataUrl} alt="" className="max-h-[320px] rounded-xl shadow-raised" />
             : <div className="flex flex-col items-center py-6 text-center"><DocThumb mime={expense.document.mimeType} className="h-24 w-[72px]" /><div className="mt-3 text-[12.5px] text-muted">{expense.document.fileName}</div></div>}
+          {expense.document.storagePath && (
+            <Button variant="outline" size="sm" className="mt-3" onClick={async () => { const url = await documentUrl(expense.document.storagePath!); if (url) window.open(url, '_blank', 'noopener'); }}>Origineel openen</Button>
+          )}
         </div>
         <Field label="Leverancier"><Input value={form.supplierName} onChange={(e) => set({ supplierName: e.target.value })} /></Field>
         <div className="grid grid-cols-2 gap-3">

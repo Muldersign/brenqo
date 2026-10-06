@@ -11,7 +11,7 @@ import { EmailComposer } from './email-composer';
 import { fillTemplate } from '@/lib/domain/template';
 import { documentTotals } from '@/lib/domain/calc';
 import { formatEUR } from '@/lib/domain/money';
-import { deliverEmail, publicUrl } from '@/lib/services/email';
+import { sendQuoteNow } from '@/lib/services/send';
 
 export function SendQuoteModal() {
   const id = useUI((s) => s.sendQuoteId);
@@ -19,7 +19,6 @@ export function SendQuoteModal() {
   const quote = useStore((s) => s.quotes.find((x) => x.id === id));
   const org = useStore((s) => s.organizations.find((o) => o.id === quote?.organizationId));
   const customer = useStore((s) => s.customers.find((c) => c.id === quote?.customerId));
-  const sendQuote = useStore((s) => s.sendQuote);
   const [mail, setMail] = useState({ to: '', subject: '', body: '' });
   const [sending, setSending] = useState(false);
 
@@ -46,9 +45,9 @@ export function SendQuoteModal() {
             loading={sending}
             onClick={async () => {
               setSending(true);
-              await deliverEmail({ ...mail, fromName: org.name, replyTo: org.email, action: { label: 'Bekijk offerte', url: publicUrl(`/o/${quote.publicToken}`) } });
-              sendQuote(quote.id, mail);
+              const result = await sendQuoteNow(quote.id, mail);
               setSending(false);
+              if (!result.delivered) { toast.error('Versturen lukte niet', { description: result.error }); return; }
               setUI({ sendQuoteId: null });
               toast.success(`Offerte ${quote.number} is verstuurd`, { description: 'Je krijgt een melding zodra de klant reageert.' });
             }}

@@ -14,6 +14,7 @@ export default defineConfig({
       { find: '@', replacement: path.resolve(import.meta.dirname, '../src') },
     ],
   },
-  define: { 'process.env.NODE_ENV': JSON.stringify('demo') },
+  // No server in the demo: every process.env value is empty except NODE_ENV.
+  define: { 'process.env': JSON.stringify({ NODE_ENV: 'production', NEXT_PUBLIC_STANDALONE_DEMO: '1' }), 'process.env.NODE_ENV': JSON.stringify('production') },
   build: { outDir: 'dist', emptyOutDir: true, assetsInlineLimit: 100_000_000, chunkSizeWarningLimit: 100_000 },
 });

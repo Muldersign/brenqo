@@ -3,6 +3,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
+import { FileUp } from 'lucide-react';
+import { BankImport } from '@/components/flows/bank-import';
+import { backendEnabled } from '@/lib/backend/config';
+import { authedFetch } from '@/lib/backend/client';
+import { refresh } from '@/lib/backend/sync';
 import { ArrowDownRight, ArrowUpRight, RefreshCw, Sparkles, Check, FileText, Receipt, Tag, EyeOff, Undo2, Camera, ArrowLeftRight, PartyPopper, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useBankAccounts, useCategories, useCustomerMap, useExpenses, useInvoiceRows, useStore, useTransactions } from '@/lib/store';
@@ -28,6 +33,8 @@ export default function BankPage() {
   const [tab, setTab] = useState<'todo' | 'all' | 'done'>(highlight ? 'all' : 'todo');
   const [q, setQ] = useState('');
   const [syncing, setSyncing] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const orgId = useStore((s) => s.activeOrgId);
 
   useEffect(() => {
     if (!highlight) return;
@@ -57,13 +64,26 @@ export default function BankPage() {
         title="Transacties"
         description={lastSync ? `Automatisch bijgewerkt · laatst ${relativeTime(lastSync)}` : 'Koppel je bank om transacties automatisch binnen te halen.'}
         actions={
-          <Button variant="outline" loading={syncing} onClick={async () => {
-            setSyncing(true);
-            await new Promise((r) => setTimeout(r, 1100));
-            const n = syncBank(account === 'all' ? undefined : account);
-            setSyncing(false);
-            toast.success(n ? `${pluralize(n, 'nieuwe transactie', 'nieuwe transacties')} opgehaald` : 'Alles is al up-to-date', { description: n ? 'We hebben direct gekeken of er betalingen voor je facturen bij zitten.' : undefined });
-          }}><RefreshCw /> Ophalen</Button>
+          <>
+            <Button variant="outline" onClick={() => setImporting(true)}><FileUp /> Afschrift importeren</Button>
+            <Button variant="outline" loading={syncing} onClick={async () => {
+              setSyncing(true);
+              if (backendEnabled) {
+                const res = await authedFetch('/api/bank/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ organizationId: orgId }) });
+                setSyncing(false);
+                if (res.status === 501) { toast('Er is nog geen bank gekoppeld', { description: 'Koppel je bank bij Bankrekeningen, of importeer een afschrift.' }); return; }
+                if (!res.ok) { toast.error('Ophalen lukte niet'); return; }
+                const j = (await res.json()) as { added: number; matched: number };
+                await refresh();
+                toast.success(j.added ? `${pluralize(j.added, 'nieuwe transactie', 'nieuwe transacties')} opgehaald` : 'Alles is al up-to-date', { description: j.matched ? `${pluralize(j.matched, 'betaling', 'betalingen')} gekoppeld aan facturen.` : undefined });
+                return;
+              }
+              await new Promise((r) => setTimeout(r, 1100));
+              const n = syncBank(account === 'all' ? undefined : account);
+              setSyncing(false);
+              toast.success(n ? `${pluralize(n, 'nieuwe transactie', 'nieuwe transacties')} opgehaald` : 'Alles is al up-to-date', { description: n ? 'We hebben direct gekeken of er betalingen voor je facturen bij zitten.' : undefined });
+            }}><RefreshCw /> Ophalen</Button>
+          </>
         }
       />
 
@@ -95,6 +115,7 @@ export default function BankPage() {
         )}
       </AnimatePresence>
 
+      <BankImport open={importing} onOpenChange={setImporting} />
       <Card className="overflow-hidden">
         <div className="flex flex-col gap-3 border-b border-line p-4 sm:flex-row sm:items-center sm:justify-between">
           <Segmented value={tab} onChange={setTab} options={[
