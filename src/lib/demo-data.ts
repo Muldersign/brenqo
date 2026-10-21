@@ -3,7 +3,7 @@ import type {
   Organization, Product, Quote, RecurringInvoice, Supplier, VatRate, AppNotification,
 } from './types';
 import { blankOrganization } from './defaults';
-import { DEFAULT_CATEGORIES } from './domain/categories';
+import { ASSOCIATION_CATEGORIES, DEFAULT_CATEGORIES } from './domain/categories';
 import { addDays, parseISODate, toISODate, todayISO } from './domain/dates';
 import { documentTotals, splitVat } from './domain/calc';
 import { round2 } from './domain/money';
@@ -33,9 +33,9 @@ function line(description: string, quantity: number, unit: string, unitPrice: nu
   return { id: id('ln'), description, quantity, unit, unitPrice, vatRate, discountPct };
 }
 
-function categoriesFor(orgId: string, extra: string[] = []): Category[] {
+function categoriesFor(orgId: string, extra: string[] = [], base = DEFAULT_CATEGORIES): Category[] {
   return [
-    ...DEFAULT_CATEGORIES.map((c) => ({ id: id('cat'), organizationId: orgId, name: c.name, icon: c.icon, custom: false })),
+    ...base.map((c) => ({ id: id('cat'), organizationId: orgId, name: c.name, icon: c.icon, custom: false })),
     ...extra.map((name) => ({ id: id('cat'), organizationId: orgId, name, icon: 'tag', custom: true })),
   ];
 }
@@ -522,7 +522,7 @@ export function createDemoData(today = todayISO()): AppData {
   });
   const vzSuppliers: Supplier[] = [
     { id: id('sup'), organizationId: vz.id, name: 'Gemeente Veendam (sporthal)', defaultCategory: 'Zaalhuur', defaultVatRate: 0, iban: '', email: '', website: '', timesUsed: 4 },
-    { id: id('sup'), organizationId: vz.id, name: 'Sporthuis Veendam', defaultCategory: 'Materiaal', defaultVatRate: 21, iban: '', email: '', website: '', timesUsed: 3 },
+    { id: id('sup'), organizationId: vz.id, name: 'Sporthuis Veendam', defaultCategory: 'Kleding & materiaal', defaultVatRate: 21, iban: '', email: '', website: '', timesUsed: 3 },
     { id: id('sup'), organizationId: vz.id, name: 'Makro', defaultCategory: 'Kantine', defaultVatRate: 9, iban: '', email: '', website: '', timesUsed: 5 },
     { id: id('sup'), organizationId: vz.id, name: 'Nevobo', defaultCategory: 'Bondskosten', defaultVatRate: 0, iban: '', email: '', website: '', timesUsed: 2 },
   ];
@@ -531,7 +531,7 @@ export function createDemoData(today = todayISO()): AppData {
     if (d(4) <= today) expense(vz, 'Gemeente Veendam (sporthal)', d(4), 410, 0, 'Zaalhuur', 'invoice', { description: 'Zaalhuur sporthal De Dijk' });
     if (d(14) <= today && m % 2 === 0) expense(vz, 'Makro', d(14), round2(120 + rand() * 180), 9, 'Kantine', 'receipt', { description: 'Inkoop kantine' });
   }
-  expense(vz, 'Sporthuis Veendam', addDays(today, -26), 389.0, 21, 'Materiaal', 'receipt', { description: '12 wedstrijdballen + ballenwagen' });
+  expense(vz, 'Sporthuis Veendam', addDays(today, -26), 389.0, 21, 'Kleding & materiaal', 'receipt', { description: '12 wedstrijdballen + ballenwagen' });
   expense(vz, 'Nevobo', addDays(today, -30), 1240, 0, 'Bondskosten', 'invoice', { description: 'Teamcontributie en scheidsrechterskosten' });
   expense(vz, 'Makro', addDays(today, -1), 86.4, 9, 'Kantine', 'receipt', { status: 'review', description: 'Frisdrank en snoep' });
 
@@ -557,6 +557,26 @@ export function createDemoData(today = todayISO()): AppData {
     { id: id('tx'), organizationId: vz.id, accountId: rabo.id, date: addDays(today, -2), description: 'Contributie', counterparty: 'R. Brink', counterpartyIban: 'NL11INGB0001234567', amount: 150, status: 'todo' },
     { id: id('tx'), organizationId: vz.id, accountId: rabo.id, date: addDays(today, -1), description: 'Makro Groningen', counterparty: 'Makro', counterpartyIban: '', amount: -86.4, status: 'todo' },
   );
+  // Money booked straight onto a category, without an invoice or receipt.
+  const vzBooked: [number, string, number, string, string][] = [
+    [-150, 'Gemeente Veendam', 1200, 'Sportsubsidie seizoen', 'Subsidie'],
+    [-120, 'Kantinekas', 640, 'Afdracht kantinekas', 'Kantine-opbrengst'],
+    [-40, 'Kantinekas', 515, 'Afdracht kantinekas', 'Kantine-opbrengst'],
+    [-95, 'Scheidsrechterspool Noord', -360, 'Vergoeding scheidsrechters', 'Scheidsrechters'],
+    [-25, 'Scheidsrechterspool Noord', -240, 'Vergoeding scheidsrechters', 'Scheidsrechters'],
+    [-60, 'Grote Clubactie', 486, 'Opbrengst loten', 'Donaties & acties'],
+    [-12, 'Rabobank', -14.5, 'Kosten Rabo verenigingspakket', 'Bankkosten'],
+  ];
+  for (const [days, counterparty, amount, description, category] of vzBooked) {
+    if (addDays(today, days) < `${year}-01-01`) continue;
+    b.transactions.push({ id: id('tx'), organizationId: vz.id, accountId: rabo.id, date: addDays(today, days), description, counterparty, counterpartyIban: '', amount, status: 'categorized', category });
+  }
+  vz.budgets = {
+    [String(year)]: {
+      'income:Contributie': 2400, 'income:Sponsoring': 2500, 'income:Subsidie': 1200, 'income:Kantine-opbrengst': 1000, 'income:Donaties & acties': 400,
+      'cost:Zaalhuur': 4100, 'cost:Bondskosten': 1300, 'cost:Scheidsrechters': 700, 'cost:Kantine': 900, 'cost:Kleding & materiaal': 600, 'cost:Bankkosten': 180,
+    },
+  };
   const vzNotifications: AppNotification[] = [
     { id: id('ntf'), organizationId: vz.id, kind: 'paid', title: '11 van 16 leden hebben hun contributie betaald.', href: '/facturen', createdAt: ts(addDays(today, -1), 9), read: false },
     { id: id('ntf'), organizationId: vz.id, kind: 'receipt', title: 'Bon van Makro is uitgelezen.', href: '/bonnetjes', createdAt: ts(addDays(today, -1), 19), read: false },
@@ -584,7 +604,7 @@ export function createDemoData(today = todayISO()): AppData {
     ],
     invoices: b.invoices,
     quotes: msQuotes,
-    categories: [...categoriesFor(ms.id), ...categoriesFor(vz.id, ['Zaalhuur', 'Kantine', 'Bondskosten'])],
+    categories: [...categoriesFor(ms.id), ...categoriesFor(vz.id, [], ASSOCIATION_CATEGORIES)],
     expenses: b.expenses,
     bankAccounts: [ing, savings, rabo],
     transactions: b.transactions,
@@ -595,6 +615,6 @@ export function createDemoData(today = todayISO()): AppData {
   };
 }
 
-export function emptyOrgCategories(orgId: string): Category[] {
-  return DEFAULT_CATEGORIES.map((c) => ({ id: uid('cat'), organizationId: orgId, name: c.name, icon: c.icon, custom: false }));
+export function emptyOrgCategories(orgId: string, kind: Organization['kind'] = 'business'): Category[] {
+  return (kind === 'association' ? ASSOCIATION_CATEGORIES : DEFAULT_CATEGORIES).map((c) => ({ id: uid('cat'), organizationId: orgId, name: c.name, icon: c.icon, custom: false }));
 }

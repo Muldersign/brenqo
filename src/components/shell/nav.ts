@@ -1,7 +1,8 @@
 import {
   LayoutGrid, FileText, FilePenLine, Users, Package, Repeat, Receipt, FileInput, Truck, ArrowLeftRight, Landmark,
-  ChartColumn, Percent, Settings,
+  ChartColumn, Percent, Settings, Calculator, BookOpenCheck,
 } from 'lucide-react';
+import type { Organization } from '@/lib/types';
 
 export interface NavItem {
   href: string;
@@ -15,7 +16,7 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-export const NAV: NavGroup[] = [
+const BASE_NAV: NavGroup[] = [
   { items: [{ href: '/', label: 'Overzicht', icon: LayoutGrid }] },
   {
     label: 'Verkoop',
@@ -51,6 +52,23 @@ export const NAV: NavGroup[] = [
   },
   { items: [{ href: '/instellingen', label: 'Instellingen', icon: Settings }] },
 ];
+
+/** A business gets a tax estimate; an association gets year figures for the general meeting. */
+export function navFor(org: Pick<Organization, 'kind' | 'vatRegistered'>): NavGroup[] {
+  return BASE_NAV.map((g) => {
+    if (g.label !== 'Inzicht') return g;
+    const items: NavItem[] = [{ href: '/rapporten', label: 'Rapporten', icon: ChartColumn }];
+    if (org.kind === 'association') {
+      items.push({ href: '/jaarcijfers', label: 'Jaarcijfers', icon: BookOpenCheck });
+      if (org.vatRegistered) items.push({ href: '/btw', label: 'Btw', icon: Percent });
+    } else {
+      items.push({ href: '/btw', label: 'Btw', icon: Percent });
+      items.push({ href: '/belasting', label: 'Belasting', icon: Calculator });
+      items.push({ href: '/jaarcijfers', label: 'Jaaroverzicht', icon: BookOpenCheck });
+    }
+    return { ...g, items };
+  });
+}
 
 export function isActive(pathname: string, href: string) {
   if (href === '/') return pathname === '/';

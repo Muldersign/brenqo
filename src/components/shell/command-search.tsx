@@ -96,6 +96,8 @@ export function CommandSearch() {
                   <Command.Item className={itemCls} onSelect={() => go('/facturen?filter=overdue')}>{icon(<FileText />)}Verlopen facturen</Command.Item>
                   <Command.Item className={itemCls} onSelect={() => go('/bank')}>{icon(<ArrowLeftRight />)}Transacties controleren</Command.Item>
                   <Command.Item className={itemCls} onSelect={() => go('/btw')}>{icon(<Receipt />)}Btw-overzicht</Command.Item>
+                  <Command.Item className={itemCls} onSelect={() => go('/belasting')}>{icon(<Receipt />)}Belasting: wat moet ik opzijzetten?</Command.Item>
+                  <Command.Item className={itemCls} onSelect={() => go('/jaarcijfers')}>{icon(<Receipt />)}Jaarcijfers en balans</Command.Item>
                 </Command.Group>
               )}
               {results && (

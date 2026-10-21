@@ -5,9 +5,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { LayoutGrid, FileText, ArrowLeftRight, Menu as MenuIcon, Plus, Camera, FileInput, FilePenLine, UserPlus, Upload } from 'lucide-react';
 import { Dialog } from 'radix-ui';
-import { NAV, isActive } from './nav';
+import { navFor, isActive } from './nav';
 import { useAttention } from './use-attention';
 import { useUI } from '@/lib/store/ui';
+import { useOrg } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
 export function MobileNav() {
@@ -18,6 +19,7 @@ export function MobileNav() {
   const openScan = useUI((s) => s.openScan);
   const setUI = useUI((s) => s.set);
   const { counts } = useAttention();
+  const org = useOrg();
 
   const tab = (href: string, label: string, Icon: React.ComponentType<{ className?: string }>, badge = 0) => {
     const active = isActive(pathname, href);
@@ -100,7 +102,7 @@ export function MobileNav() {
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line-strong" />
             <Dialog.Title className="sr-only">Menu</Dialog.Title>
             <Dialog.Description className="sr-only">Alle onderdelen</Dialog.Description>
-            {NAV.filter((g) => g.label).map((g) => (
+            {navFor(org).filter((g) => g.label).map((g) => (
               <div key={g.label} className="mb-3">
                 <div className="px-2 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-faint">{g.label}</div>
                 <div className="grid grid-cols-3 gap-2">

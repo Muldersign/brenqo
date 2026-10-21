@@ -10,7 +10,8 @@ import { authedFetch } from '@/lib/backend/client';
 import { refresh } from '@/lib/backend/sync';
 import { ArrowDownRight, ArrowUpRight, RefreshCw, Sparkles, Check, FileText, Receipt, Tag, EyeOff, Undo2, Camera, ArrowLeftRight, PartyPopper, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useBankAccounts, useCategories, useCustomerMap, useExpenses, useInvoiceRows, useStore, useTransactions } from '@/lib/store';
+import { useBankAccounts, useCategories, useCustomerMap, useExpenses, useInvoiceRows, useOrg, useStore, useTransactions } from '@/lib/store';
+import { incomeCategories } from '@/lib/domain/ledger';
 import { useUI } from '@/lib/store/ui';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -195,6 +196,7 @@ function TxRow({ tx, highlight }: { tx: BankTransaction; highlight: boolean }) {
   const rows = useInvoiceRows();
   const expenses = useExpenses();
   const categories = useCategories();
+  const org = useOrg();
   const openScan = useUI((s) => s.openScan);
   const s = useStore.getState();
   const inv = rows.find((r) => r.inv.id === tx.invoiceId);
@@ -249,7 +251,7 @@ function TxRow({ tx, highlight }: { tx: BankTransaction; highlight: boolean }) {
           <MenuSeparator />
           <MenuLabel>Of boek als</MenuLabel>
           <div className="max-h-[180px] overflow-y-auto">
-            {[...categories.map((c) => c.name), 'Privé', 'Belastingen', 'Eigen overboeking'].map((c) => (
+            {[...(incoming ? incomeCategories(org.kind) : categories.map((c) => c.name)), 'Privé', 'Belastingen', 'Eigen overboeking'].map((c) => (
               <MenuItem key={c} icon={<Tag />} onSelect={() => { s.categorizeTransaction(tx.id, c); toast.success(`Geboekt als ${c.toLowerCase()}`); }}>{c}</MenuItem>
             ))}
           </div>

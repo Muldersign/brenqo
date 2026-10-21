@@ -6,11 +6,11 @@ import { PanelLeftClose, PanelLeft, Sparkles, Settings, LogOut } from 'lucide-re
 import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/components/ui/menu';
 import { backendEnabled } from '@/lib/backend/config';
 import { signOut } from '@/lib/backend/sync';
-import { NAV, isActive } from './nav';
+import { navFor, isActive } from './nav';
 import { OrgSwitcher } from './org-switcher';
 import { useAttention } from './use-attention';
 import { useUI } from '@/lib/store/ui';
-import { useStore } from '@/lib/store';
+import { useOrg, useStore } from '@/lib/store';
 import { Avatar, Tooltip } from '@/components/ui/misc';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +20,7 @@ export function Sidebar() {
   const toggle = useUI((s) => s.toggleSidebar);
   const { counts } = useAttention();
   const user = useStore((s) => s.user);
+  const org = useOrg();
 
   return (
     <aside
@@ -49,7 +50,7 @@ export function Sidebar() {
       </div>
 
       <nav className="mt-4 flex-1 space-y-5 overflow-y-auto px-3 pb-6 scrollbar-none">
-        {NAV.map((group, gi) => (
+        {navFor(org).map((group, gi) => (
           <div key={gi}>
             {group.label && !collapsed && (
               <div className="mb-1.5 px-3 text-[12px] font-medium uppercase tracking-[0.05em] text-muted">{group.label}</div>
@@ -86,7 +87,7 @@ export function Sidebar() {
       </nav>
 
       {!collapsed && (
-        <div className="mx-3 mb-3 hidden rounded-[18px] border border-line bg-surface p-4 [@media(min-height:1000px)]:block">
+        <div className="mx-3 mb-3 hidden rounded-[18px] border border-line bg-surface p-4 [@media(min-height:1100px)]:block">
           <div className="flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.05em] text-muted">
             <Sparkles className="size-3.5" /> Tip
           </div>

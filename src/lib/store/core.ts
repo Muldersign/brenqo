@@ -184,7 +184,7 @@ export function createActions(set: SetState, get: GetState): Actions {
         const s = get();
         set({
           organizations: [...s.organizations, org],
-          categories: [...s.categories, ...emptyOrgCategories(org.id)],
+          categories: [...s.categories, ...emptyOrgCategories(org.id, kind)],
           members: [...s.members, { id: uid('mem'), organizationId: org.id, name: s.user.name, email: s.user.email, role: 'owner' }],
           activeOrgId: org.id,
         });

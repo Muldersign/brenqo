@@ -70,6 +70,24 @@ export interface Organization {
     sendRecurring: boolean;
     processOnlinePayments: boolean;
   };
+  /** Inputs for the income tax estimate (business only). */
+  tax?: {
+    hoursCriterion: boolean;
+    starter: boolean;
+    otherIncome: number;
+    provisionalPaid: Record<string, number>;
+  };
+  /** Budget per year, keyed `income:<category>` / `cost:<category>`. */
+  budgets?: Record<string, Record<string, number>>;
+  /** Year end: audit committee (kascommissie) sign-off and notes. */
+  yearClosings?: Record<string, YearClosing>;
+}
+
+export interface YearClosing {
+  auditors: string;
+  auditDate: string;
+  approved: boolean;
+  note: string;
 }
 
 export interface Customer {

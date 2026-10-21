@@ -18,6 +18,21 @@ export const DEFAULT_CATEGORIES: { name: string; icon: string }[] = [
   { name: 'Overig', icon: 'circle-dashed' },
 ];
 
+/** Cost categories a sports club or other association starts with. */
+export const ASSOCIATION_CATEGORIES: { name: string; icon: string }[] = [
+  { name: 'Zaalhuur', icon: 'building' },
+  { name: 'Bondskosten', icon: 'trophy' },
+  { name: 'Scheidsrechters', icon: 'flag' },
+  { name: 'Trainers & vrijwilligers', icon: 'users' },
+  { name: 'Kleding & materiaal', icon: 'shirt' },
+  { name: 'Toernooien & activiteiten', icon: 'party-popper' },
+  { name: 'Kantine', icon: 'coffee' },
+  { name: 'Verzekeringen', icon: 'shield-check' },
+  { name: 'Bankkosten', icon: 'landmark' },
+  { name: 'Website & drukwerk', icon: 'megaphone' },
+  { name: 'Overig', icon: 'circle-dashed' },
+];
+
 /** Starting knowledge for suppliers we have never seen in this administration. */
 const KEYWORDS: [string[], string][] = [
   [['adobe', 'figma', 'canva', 'notion', 'microsoft', 'google workspace', 'github', 'slack', 'jetbrains', 'apple'], 'Software'],

@@ -26,6 +26,8 @@ import Bank from '@/app/(app)/bank/page';
 import Accounts from '@/app/(app)/bank/rekeningen/page';
 import Reports from '@/app/(app)/rapporten/page';
 import Vat from '@/app/(app)/btw/page';
+import Tax from '@/app/(app)/belasting/page';
+import YearFigures from '@/app/(app)/jaarcijfers/page';
 import Settings from '@/app/(app)/instellingen/page';
 import PublicInvoice from '@/app/f/[token]/page';
 import Checkout from '@/app/f/[token]/betalen/page';
@@ -36,7 +38,7 @@ const APP: [string, React.ComponentType][] = [
   ['/facturen/:id', InvoiceDetail], ['/facturen/:id/bewerken', EditInvoice], ['/offertes', Quotes], ['/offertes/nieuw', NewQuote],
   ['/offertes/:id', QuoteDetail], ['/klanten', Customers], ['/klanten/:id', CustomerDetail], ['/producten', Products],
   ['/periodiek', Recurring], ['/bonnetjes', Receipts], ['/inkoopfacturen', PurchaseInvoices], ['/leveranciers', Suppliers],
-  ['/bank', Bank], ['/bank/rekeningen', Accounts], ['/rapporten', Reports], ['/btw', Vat], ['/instellingen', Settings],
+  ['/bank', Bank], ['/bank/rekeningen', Accounts], ['/rapporten', Reports], ['/btw', Vat], ['/belasting', Tax], ['/jaarcijfers', YearFigures], ['/instellingen', Settings],
 ];
 const PUBLIC: [string, React.ComponentType][] = [['/f/:token', PublicInvoice], ['/f/:token/betalen', Checkout], ['/o/:token', PublicQuote]];
 
